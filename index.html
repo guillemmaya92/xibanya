@@ -8,7 +8,7 @@
   :root { --accent: #7cc4ff; }
   * { margin: 0; padding: 0; box-sizing: border-box; }
   html { background: #02030a; }
-  body { font-family: "Segoe UI", system-ui, "Microsoft YaHei", "PingFang SC", "Noto Sans SC", sans-serif; color: #eaf2ff; height: 3700vh; }
+  body { font-family: "Segoe UI", system-ui, "Microsoft YaHei", "PingFang SC", "Noto Sans SC", sans-serif; color: #eaf2ff; height: 3900vh; }
   canvas { position: fixed; inset: 0; width: 100%; height: 100%; display: block; touch-action: pan-y; }
   canvas.grab { cursor: grab; }
   canvas.grabbing { cursor: grabbing; }
@@ -112,6 +112,10 @@
     border: 1px solid #ffffff26; box-shadow: 0 10px 30px #0008; }
   .stat span { display: block; font-size: clamp(.8rem, 1.1vw, 1rem); letter-spacing: .2em; opacity: .8; }
   .stat b { display: block; margin-top: .15rem; font-size: clamp(1.6rem, 3vw, 2.6rem); font-weight: 700; letter-spacing: .04em; font-variant-numeric: tabular-nums; color: #fff; }
+  /* final: mensaje de agradecimiento sobre la galaxia */
+  .thanks { position: fixed; inset: 0; z-index: 7; display: grid; place-items: center; opacity: 0; pointer-events: none; }
+  .thanks h1 { font-size: clamp(3rem, 10vw, 9rem); font-weight: 700; letter-spacing: .25em; padding-left: .25em; color: #fff;
+    text-shadow: 0 0 40px #7cc4ff99, 0 0 90px #7c5cff55, 0 4px 30px #000; will-change: transform; }
   #loader { position: fixed; inset: 0; background: #02030a; z-index: 20; display: grid; place-items: center; letter-spacing: .4em; font-size: .8rem; transition: opacity 1s; }
 </style>
 </head>
@@ -224,10 +228,11 @@
 </figure>
 <div class="stat" id="statPop" lang="zh-Hans"><span>西班牙总人口</span><b id="statPopVal">—</b></div>
 <div class="stat" id="statInc" lang="zh-Hans"><span>人均年收入</span><b>15,948 欧元</b></div>
+<div class="thanks" id="thanks" lang="zh-Hans"><h1>谢谢大家</h1></div>
 <div class="pin" id="pin" lang="zh-Hans">马德里</div>
 <div class="hint" id="hint" lang="zh-Hans"><span>向下滑动</span><i></i></div>
 <div class="dots" id="dots" role="navigation" aria-label="Etapas">
-  <button data-i="0" lang="zh-Hans">地球</button><button data-i="1" lang="zh-Hans">欧洲</button><button data-i="2" lang="zh-Hans">西班牙</button><button data-i="3" lang="zh-Hans">马德里</button><button data-i="4" data-to="5" lang="zh-Hans">名胜</button><button data-i="6" data-to="13" lang="zh-Hans">风景</button><button data-i="14" data-to="16" lang="zh-Hans">美食</button><button data-i="17" lang="zh-Hans">语言</button><button data-i="18" lang="zh-Hans">人口密度</button><button data-i="19" lang="zh-Hans">人均收入</button>
+  <button data-i="0" lang="zh-Hans">地球</button><button data-i="1" lang="zh-Hans">欧洲</button><button data-i="2" lang="zh-Hans">西班牙</button><button data-i="3" lang="zh-Hans">马德里</button><button data-i="4" data-to="5" lang="zh-Hans">名胜</button><button data-i="6" data-to="13" lang="zh-Hans">风景</button><button data-i="14" data-to="16" lang="zh-Hans">美食</button><button data-i="17" lang="zh-Hans">语言</button><button data-i="18" lang="zh-Hans">人口密度</button><button data-i="19" lang="zh-Hans">人均收入</button><button data-i="20" lang="zh-Hans">谢谢</button>
 </div>
 <div class="alt" lang="zh-Hans">高度 <span id="alt">—</span> 公里</div>
 
@@ -323,8 +328,14 @@ scene.add(sun);
 
 // ---------- Cielo estrellado ----------
 // Estrellas con tamaño, color (temperatura) y centelleo propios, una banda tipo Vía Láctea y nebulosas tenues.
+// Se dibuja en una escena aparte con una cámara de campo de visión fijo: los cambios de zoom (fov)
+// y de distancia de la cámara principal no desplazan las estrellas por la pantalla.
+const skyScene = new THREE.Scene();
+const skyCam = new THREE.PerspectiveCamera(40, innerWidth / innerHeight, 0.1, 400);
+const skyQ = new THREE.Quaternion();
+renderer.autoClear = false;
 const stars = new THREE.Group();
-scene.add(stars);
+skyScene.add(stars);
 const gauss = () => Math.sqrt(-2 * Math.log(1 - Math.random())) * Math.cos(2 * Math.PI * Math.random());
 const STAR_TINTS = [[0.70, 0.80, 1.00], [0.85, 0.90, 1.00], [1, 1, 1], [1, 0.96, 0.88], [1, 0.86, 0.70], [1, 0.75, 0.60]];
 const STAR_W = [0.12, 0.22, 0.30, 0.20, 0.11, 0.05];
@@ -463,6 +474,7 @@ function updateMeteors(t, dt, visible) {
 }
 
 // Parches de alta resolución con teselas satelitales Esri (Mercator -> equirectangular)
+const patchMats = []; // parches satelitales de alta resolución
 function buildPatch(Z, B, radius, order) {
   const N = 2 ** Z, TS = 256;
   const mercY = lat => (1 - Math.log(Math.tan(lat * Math.PI / 180) + 1 / Math.cos(lat * Math.PI / 180)) / Math.PI) / 2 * N;
@@ -507,6 +519,7 @@ function buildPatch(Z, B, radius, order) {
         (90 - B.latMax) * d, (B.latMax - B.latMin) * d),
       new THREE.MeshPhongMaterial({ map: tex, transparent: true, depthWrite: false, shininess: 4, specular: 0x111111 })
     );
+    patchMats.push(patch.material);
     patch.renderOrder = order;
     earth.add(patch);
   });
@@ -819,6 +832,7 @@ stages.push({ dist: 1.3, fov: 28, tilt: 0.08, q: quatFor(39.17, 2.22) }); // 16 
 stages.push(MAP_VIEW); // 17 mapa de idiomas
 stages.push(MAP_VIEW); // 18 densidad de población
 stages.push(MAP_VIEW); // 19 renta por persona
+stages.push({ dist: 45, fov: 55, tilt: 0, q: quatFor(40.0, -3.7) }); // 20 final: la Tierra se pierde en la galaxia
 const LAST = stages.length - 1;
 const legend2 = document.getElementById('legend2');
 const statPop = document.getElementById('statPop'), statInc = document.getElementById('statInc');
@@ -884,6 +898,11 @@ const lerp = (a, b, t) => a + (b - a) * t;
 const tmp = new THREE.Vector3();
 const qa = new THREE.Quaternion(), yAxis = new THREE.Vector3(0, 1, 0);
 const clock = new THREE.Clock();
+const thanksEl = document.getElementById('thanks'), thanksH = thanksEl.querySelector('h1');
+// orientación final del cielo: la banda de la Vía Láctea cruza la pantalla en diagonal
+const galaxyN = new THREE.Vector3(0.55, 0.83, 0).normalize();
+const qGalaxy = new THREE.Quaternion().setFromUnitVectors(bandN, galaxyN);
+const qSky = new THREE.Quaternion();
 
 function frame() {
   const t = clock.getElapsedTime();
@@ -900,7 +919,10 @@ function frame() {
   const tilt = lerp(A.tilt, Bn.tilt, f);
   camera.position.set(0, -Math.sin(tilt) * dist, Math.cos(tilt) * dist);
   camera.lookAt(0, 0, R * smoother((6.2 - dist) / 5));
-  camera.fov = fov; camera.updateProjectionMatrix();
+  camera.fov = fov;
+  camera.near = Math.max(0.002, (dist - R) * 0.4);
+  camera.far = dist + 60; // incluye las estrellas fugaces (z = -40)
+  camera.updateProjectionMatrix();
 
   // orientación del globo
   // inercia al soltar y arrastre solo en la etapa Espacio
@@ -911,26 +933,41 @@ function frame() {
   const spin = qa.clone().setFromAxisAngle(yAxis, 0.4 + t * 0.06).premultiply(userQ);
   const qA = A.q || spin;
   earth.quaternion.copy(qA).slerp(Bn.q, f);
+  const endA = smoother((s - 19.15) / 0.75);            // progreso del alejamiento final
+  const earthScale = 1 - 0.9995 * smoother((s - 19.4) / 0.55);
+  earth.scale.setScalar(earthScale); atmos.scale.setScalar(earthScale);
+  earth.visible = atmos.visible = earthScale > 0.002;
 
-  stars.rotation.y = t * 0.002;
-  const skyA = 1 - 0.5 * smoother(s / LAST);
+  // el cielo solo gira muy despacio alrededor del eje de la galaxia (la banda no se desplaza)
+  stars.quaternion.copy(qSky.setFromAxisAngle(galaxyN, t * 0.002)).multiply(qGalaxy);
+  const skyA = 1 - 0.5 * smoother(Math.min(s, 19) / 19) + 0.5 * endA;
   starMat.uniforms.uTime.value = t;
   starMat.uniforms.uOpacity.value = skyA;
-  for (const n of nebulae) n.m.opacity = n.base * skyA;
+  for (const n of nebulae) n.m.opacity = n.base * skyA * (1 + 1.5 * endA);
   // estrellas fugaces solo mientras se ve el espacio (Espacio y Europa)
   const dtM = Math.min(Math.max(t - (frame.lastT ?? t), 0), 0.05); frame.lastT = t;
-  updateMeteors(t, dtM, 1 - smoother((s - 0.8) / 0.6));
+  updateMeteors(t, dtM, Math.max(1 - smoother((s - 0.8) / 0.6), smoother((s - 19.8) / 0.15)));
 
   // marcador de Madrid: aparece en la última etapa
   // transición imagen real -> mapa pintado
-  const mapsOn = 1; // Renta es la última etapa: los mapas pintados se quedan
-  const mapA = smoother((s - 16.15) / 0.6) * mapsOn;
-  if (mapMat) mapMat.opacity = mapA;
-  if (globeMat) globeMat.opacity = mapA;
+  // Orden de capas: satélite < globo pintado < idiomas < densidad < renta.
+  // Para que no aparezca un rectángulo sobre España, nunca se funden dos capas semitransparentes a la vez:
+  //  - entrada: primero el globo pintado (opaco) y después, encima, el mapa de idiomas
+  //  - cada mapa nuevo se funde sobre el anterior opaco; el de debajo se oculta cuando el de arriba ya es opaco
+  //  - salida: primero se va el mapa temático (sobre el globo pintado opaco) y después el globo pintado
+  const globeA = smoother((s - 16.1) / 0.35) * (1 - smoother((s - 19.25) / 0.35));
+  const themOn = 1 - smoother((s - 19.1) / 0.3);
+  const langA = smoother((s - 16.4) / 0.35);
   const densA = smoother((s - 17.15) / 0.6);
-  if (densMat) densMat.opacity = densA * mapsOn;
   const rentaA = smoother((s - 18.15) / 0.6);
-  if (rentaMat) rentaMat.opacity = rentaA * mapsOn;
+  if (globeMat) globeMat.opacity = globeA;
+  if (mapMat) mapMat.opacity = densA > 0.999 ? 0 : langA * themOn;
+  if (densMat) densMat.opacity = rentaA > 0.999 ? 0 : densA * themOn;
+  if (rentaMat) rentaMat.opacity = rentaA * themOn;
+  for (const m of [globeMat, mapMat, densMat, rentaMat]) if (m) m.visible = m.opacity > 0.001;
+  // el parche satelital solo se ve de cerca: así no se nota su borde desde lejos (Europa, alejamiento final)
+  const patchA = smoother((1.9 - dist) / 0.5);
+  for (const m of patchMats) { m.opacity = patchA; m.visible = patchA > 0.001; }
   const pa = smoother(s - 2.15) * (1 - smoother((s - 3.05) / 0.35)); // se oculta al pasar a Lugares
   const pulse = (t * 0.8) % 1;
   const rs = 0.014 * (0.5 + pulse);
@@ -950,9 +987,13 @@ function frame() {
   }
   legend.style.opacity = la;
   legend2.style.opacity = smoother((s - 17.6) / 0.3) * (1 - smoother((s - 18.05) / 0.3));
-  legend3.style.opacity = smoother((s - 18.6) / 0.3);
+  legend3.style.opacity = smoother((s - 18.6) / 0.3) * (1 - smoother((s - 19.05) / 0.25));
   const popA = smoother((s - 17.6) / 0.3) * (1 - smoother((s - 18.05) / 0.3));
-  const incA = smoother((s - 18.6) / 0.3);
+  const incA = smoother((s - 18.6) / 0.3) * (1 - smoother((s - 19.05) / 0.25));
+  // 谢谢大家: aparece cuando la Tierra ya se ha perdido entre las estrellas
+  const thA = smoother((s - 19.6) / 0.35);
+  thanksEl.style.opacity = thA;
+  thanksH.style.transform = `scale(${0.92 + 0.08 * thA})`;
   statPop.style.opacity = popA; statPop.style.transform = `translateY(${(1 - popA) * -10}px)`;
   statInc.style.opacity = incA; statInc.style.transform = `translateY(${(1 - incA) * -10}px)`;
 
@@ -1024,6 +1065,13 @@ function frame() {
   panels.forEach((p, k) => p.classList.toggle('active', Math.abs(s - k) < 0.3));
   dots.forEach(d => { const a = +d.dataset.i, b = +(d.dataset.to ?? a); d.classList.toggle('on', s >= a - 0.5 && s < b + 0.5); });
 
+  // cámara del cielo: sigue la orientación de la cámara principal, pero en el alejamiento final
+  // se queda quieta para que las estrellas no se muevan mientras la Tierra se pierde a lo lejos
+  if (s <= 19) skyQ.copy(camera.quaternion);
+  skyCam.quaternion.copy(skyQ);
+  renderer.clear();
+  renderer.render(skyScene, skyCam);
+  renderer.clearDepth();
   renderer.render(scene, camera);
   requestAnimationFrame(frame);
 }
@@ -1033,6 +1081,7 @@ addEventListener('resize', () => {
   renderer.setSize(innerWidth, innerHeight);
   starMat.uniforms.uPR.value = renderer.getPixelRatio();
   camera.aspect = innerWidth / innerHeight; camera.updateProjectionMatrix();
+  skyCam.aspect = camera.aspect; skyCam.updateProjectionMatrix();
 });
 </script>
 </body>
