@@ -1,0 +1,9 @@
+﻿series: 31458
+{"COD":"ADRH102301","Nombre":"Abrera. Dato base. Renta neta media por persona. ","T3_Unidad":"Euros","T3_Escala":" ","MetaData":[{"Id":5457,"T3_Variable":"Municipios","Nombre":"Abrera","Codigo":"08001"},{"Id":72,"T3_Variable":"Tipo de dato","Nombre":"Dato base","Codigo":""},{"Id":284048,"T3_Variable":"SALDOS CONTABLES","Nombre":"Renta neta media por persona","Codigo":""}],"Data":[{"Fecha":"2024-01-01T00:00:00.000+01:00","T3_TipoDato":"Definitivo","T3_Periodo":"A","Anyo":2024,"Valor":17724}]}
+{"COD":"ADRH102300","Nombre":"Abrera. Dato base. Renta neta media por hogar. ","T3_Unidad":"Euros","T3_Escala":" ","MetaData":[{"Id":5457,"T3_Variable":"Municipios","Nombre":"Abrera","Codigo":"08001"},{"Id":72,"T3_Variable":"Tipo de dato","Nombre":"Dato base","Codigo":""},{"Id":284052,"T3_Variable":"SALDOS CONTABLES","Nombre":"Renta neta media por hogar","Codigo":""}],"Data":[{"Fecha":"2024-01-01T00:00:00.000+01:00","T3_TipoDato":"Definitivo","T3_Periodo":"A","Anyo":2024,"Valor":47687}]}
+{"COD":"ADRH9821769","Nombre":"Abrera. Dato base. Media de la renta por unidad de consumo. ","T3_Unidad":"Euros","T3_Escala":" ","MetaData":[{"Id":5457,"T3_Variable":"Municipios","Nombre":"Abrera","Codigo":"08001"},{"Id":72,"T3_Variable":"Tipo de dato","Nombre":"Dato base","Codigo":""},{"Id":383098,"T3_Variable":"SALDOS CONTABLES","Nombre":"Media de la renta por unidad de consumo","Codigo":""}],"Data":[{"Fecha":"2024-01-01T00:00:00.000+01:00","T3_TipoDato":"Definitivo","T3_Periodo":"A","Anyo":2024,"Valor":26619}]}
+muni persona: 311 [
+  'Abrera. Dato base. Renta neta media por persona.  = 17724',
+  'Aguilar de Segarra. Dato base. Renta neta media por persona.  = 20226',
+  'Alella. Dato base. Renta neta media por persona.  = 25772'
+]
