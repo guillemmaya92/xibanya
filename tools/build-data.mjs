@@ -1,4 +1,4 @@
-// Genera poblacion.js (padrón INE, tabla 29005) y municipios.js (geometría es-atlas)
+// Genera data/poblacion.js (padrón INE, tabla 29005) y data/municipios.js (geometría es-atlas)
 // Uso: node tools/build-data.mjs <ruta-csv-ine> <ruta-municipalities.json>
 import { readFileSync, writeFileSync } from 'node:fs';
 
@@ -20,12 +20,12 @@ for (const line of lines) {
 const codes = Object.keys(best);
 const year = Math.max(...codes.map(c => best[c].year));
 const out = Object.fromEntries(codes.map(c => [c, best[c].pop]));
-writeFileSync(new URL('../poblacion.js', import.meta.url),
+writeFileSync(new URL('../data/poblacion.js', import.meta.url),
   `// Población por municipio (INE, Padrón ${year}). Generado por tools/build-data.mjs\n` +
   `window.POBLACION_YEAR = ${year};\nwindow.POBLACION = ${JSON.stringify(out)};\n`);
 
 const topo = readFileSync(topoPath, 'utf8');
-writeFileSync(new URL('../municipios.js', import.meta.url),
+writeFileSync(new URL('../data/municipios.js', import.meta.url),
   `// Límites municipales (es-atlas 0.6.0, IGN). Generado por tools/build-data.mjs\nwindow.MUNICIPIOS = ${topo};\n`);
 
 console.log(`municipios con población: ${codes.length}, año ${year}, Madrid 28079 = ${out['28079']}`);

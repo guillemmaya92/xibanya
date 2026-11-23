@@ -4,120 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>España</title>
-<style>
-  :root { --accent: #7cc4ff; }
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  html { background: #02030a; }
-  body { font-family: "Segoe UI", system-ui, "Microsoft YaHei", "PingFang SC", "Noto Sans SC", sans-serif; color: #eaf2ff; height: 3900vh; }
-  canvas { position: fixed; inset: 0; width: 100%; height: 100%; display: block; touch-action: pan-y; }
-  canvas.grab { cursor: grab; }
-  canvas.grabbing { cursor: grabbing; }
-  .panel {
-    position: fixed; left: 50%; top: 50%; z-index: 5;
-    transform: translate(-50%, -46%); text-align: center; width: min(90vw, 760px);
-    opacity: 0; pointer-events: none; filter: blur(8px);
-    transition: opacity .9s ease, transform .9s ease, filter .9s ease;
-    text-shadow: 0 2px 30px #000, 0 0 8px #0008;
-  }
-  .panel.active { opacity: 1; transform: translate(-50%, -50%); filter: blur(0); }
-  .panel.top { top: 17vh; }
-  .panel.bottom { top: auto; bottom: 11vh; transform: translate(-50%, 20px); }
-  .panel.bottom.active { transform: translate(-50%, 0); }
-  .panel small { display: block; margin-bottom: .8rem; font-size: .75rem; letter-spacing: .4em; text-transform: uppercase; color: var(--accent); }
-  .panel h1 { font-size: clamp(2.4rem, 8vw, 6rem); font-weight: 200; letter-spacing: .08em; }
-  .panel p { margin-top: 1rem; font-size: clamp(1rem, 2vw, 1.25rem); opacity: .85; line-height: 1.6; }
-  .hint {
-    position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%); z-index: 6;
-    font-size: .75rem; letter-spacing: .3em; text-transform: uppercase; opacity: .7;
-    display: flex; flex-direction: column; align-items: center; gap: .6rem; transition: opacity .4s;
-  }
-  .hint i { width: 1px; height: 36px; background: linear-gradient(var(--accent), transparent); animation: drop 1.6s infinite; }
-  @keyframes drop { 0% { transform: scaleY(0); transform-origin: top; } 50% { transform: scaleY(1); transform-origin: top; } 51% { transform-origin: bottom; } 100% { transform: scaleY(0); transform-origin: bottom; } }
-  /* índice de etapas: panel oscuro translúcido, legible sobre el espacio y sobre los mapas claros */
-  .dots {
-    position: fixed; right: 1.4rem; top: 50%; transform: translateY(-50%); z-index: 8;
-    display: flex; flex-direction: column; gap: .25rem; padding: .7rem;
-    background: #02030ab3; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
-    border: 1px solid #ffffff26; border-radius: 16px; box-shadow: 0 8px 30px #0006;
-    counter-reset: etapa;
-  }
-  .dots button {
-    all: unset; cursor: pointer; position: relative; counter-increment: etapa;
-    display: flex; align-items: center; justify-content: space-between; gap: 1rem;
-    padding: .55rem .8rem; border-radius: 10px; min-width: 9.5rem;
-    font-size: .72rem; font-weight: 600; letter-spacing: .2em; text-transform: uppercase;
-    color: #eaf2ffb3; transition: background .3s, color .3s;
-  }
-  .dots button::before { content: counter(etapa, decimal-leading-zero); font-size: .65rem; letter-spacing: .1em; opacity: .55; font-variant-numeric: tabular-nums; }
-  .dots button::after { content: ""; flex: none; width: 9px; height: 9px; border-radius: 50%; border: 1.5px solid currentColor; transition: all .3s; }
-  .dots button:hover { background: #ffffff14; color: #fff; }
-  .dots button.on { background: #7cc4ff26; color: #fff; }
-  .dots button.on::before { opacity: 1; color: var(--accent); }
-  .dots button.on::after { background: var(--accent); border-color: var(--accent); box-shadow: 0 0 12px var(--accent); }
-  .dots button:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
-  .alt { position: fixed; left: 2rem; bottom: 2rem; z-index: 6; font-size: .8rem; letter-spacing: .15em; font-variant-numeric: tabular-nums; padding: .5rem .9rem; border-radius: 999px; background: #02030ab3; backdrop-filter: blur(10px); border: 1px solid #ffffff26; color: #eaf2ffd9; }
-  .pin { position: fixed; z-index: 4; left: 0; top: 0; pointer-events: none; opacity: 0; font-size: 1rem; letter-spacing: .35em; text-transform: uppercase; text-shadow: 0 1px 12px #000; will-change: transform, opacity; white-space: nowrap; }
-  .pin::before { content: ""; display: inline-block; width: 12px; height: 12px; margin-right: .8rem; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 5px #7cc4ff55, 0 0 24px var(--accent); }
-  .lbl { position: fixed; z-index: 4; left: 0; top: 0; pointer-events: none; opacity: 0; font-weight: 700; font-size: clamp(.8rem, 1.6vw, 1.15rem); letter-spacing: .12em; text-transform: uppercase; color: #fff; text-shadow: 0 1px 3px #000c, 0 0 14px #0009; transform: translate(-50%, -50%); will-change: transform, opacity; white-space: nowrap; }
-  .legend { position: fixed; left: 2rem; top: 50%; transform: translateY(-50%); z-index: 6; opacity: 0; pointer-events: none; background: #02030a99; backdrop-filter: blur(10px); border: 1px solid #ffffff22; border-radius: 14px; padding: 1.2rem 1.4rem; display: grid; gap: .9rem; }
-  .legend header { margin-bottom: .2rem; }
-  .legend header span { display: block; font-size: .7rem; letter-spacing: .35em; text-transform: uppercase; color: var(--accent); margin-bottom: .5rem; }
-  .legend h2 { font-size: clamp(1.4rem, 2.6vw, 2.1rem); font-weight: 300; letter-spacing: .04em; line-height: 1.15; max-width: 230px; }
-  .legend div { display: flex; align-items: center; gap: .8rem; font-size: 1rem; letter-spacing: .08em; }
-  .legend i { width: 18px; height: 18px; border-radius: 5px; display: inline-block; }
-  .legend small { font-size: .7rem; opacity: .6; max-width: 190px; line-height: 1.4; }
-  .legend .ramp { display: grid; gap: .35rem; }
-  .legend .ramp div { gap: .7rem; font-size: .85rem; font-variant-numeric: tabular-nums; }
-  .legend .ramp i { width: 26px; height: 14px; border-radius: 3px; }
-  /* ciudades y monumentos */
-  .city { position: fixed; z-index: 4; left: 0; top: 0; pointer-events: none; opacity: 0; will-change: transform, opacity;
-    font-size: .95rem; font-weight: 600; letter-spacing: .3em; text-transform: uppercase; white-space: nowrap; text-shadow: 0 1px 10px #000, 0 0 4px #000; }
-  .city b { position: absolute; left: -7px; top: -7px; width: 14px; height: 14px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 4px #7cc4ff55, 0 0 22px var(--accent); }
-  .city b::after { content: ""; position: absolute; inset: -4px; border-radius: 50%; border: 2px solid var(--accent); animation: ping 1.8s ease-out infinite; }
-  .city span { position: absolute; left: 18px; top: -.7em; }
-  .city.left span { left: auto; right: 18px; }
-  @keyframes ping { from { transform: scale(1); opacity: .9; } to { transform: scale(3.2); opacity: 0; } }
-  .photo { position: fixed; z-index: 7; top: 50%; width: min(34vw, 480px); margin: 0; opacity: 0; pointer-events: none;
-    transform: translateY(-50%); background: #02030acc; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
-    border: 1px solid #ffffff26; border-radius: 18px; overflow: hidden; box-shadow: 0 20px 60px #000a; will-change: opacity, transform; }
-  .photo.l { left: 2rem; }
-  .photo.r { right: 14rem; }
-  .photo img { display: block; width: 100%; aspect-ratio: 3 / 2; object-fit: cover; }
-  .photo figcaption { padding: 1rem 1.3rem 1.2rem; }
-  .photo figcaption span { display: block; font-size: .7rem; letter-spacing: .35em; text-transform: uppercase; color: var(--accent); margin-bottom: .4rem; }
-  .photo h2 { font-size: clamp(1.4rem, 2.4vw, 2rem); font-weight: 300; letter-spacing: .03em; }
-  .photo p { margin-top: .4rem; font-size: .9rem; line-height: 1.5; opacity: .8; }
-  #leader { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 6; pointer-events: none; }
-  #leader line { stroke: var(--accent); stroke-width: 1.5; stroke-dasharray: 4 5; filter: drop-shadow(0 0 4px #000); }
-  #leader circle { fill: var(--accent); }
-  /* títulos laterales señalados con flecha (Tierra, Europa, España) */
-  .panel.side { left: 6vw; top: 50%; width: min(34vw, 440px); text-align: left; transform: translate(0, -46%); }
-  .panel.side.active { transform: translate(0, -50%); }
-  .panel.side h1 { display: inline-block; font-size: clamp(2rem, 4.6vw, 4.2rem); line-height: 1.05; }
-  #arrow { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 6; pointer-events: none; opacity: 0; overflow: visible; }
-  #arrowPath { fill: none; stroke: var(--accent); stroke-width: 2.5; stroke-linecap: round; filter: drop-shadow(0 0 6px #000c); }
-  #arrowTip { fill: #7cc4ff33; stroke: var(--accent); stroke-width: 2; }
-  .panel h1 .big { display: block; font-size: 1.4em; font-weight: 700; line-height: 1.1; }
-  /* Europa y España: algo más a la izquierda, más grandes y con más presencia */
-  .panel.side.pop { left: 2vw; top: 36%; }
-  .panel.bottom.pop h1,
-  .panel.side.pop h1 { font-size: clamp(2.8rem, 6.4vw, 6rem); font-weight: 700; letter-spacing: .14em; color: #fff;
-    text-shadow: 0 2px 24px #000, 0 0 28px #7cc4ff66, 0 0 2px #000; }
-  .photo.tall { width: min(26vw, 380px, calc((80vh - 4rem) * 0.8)); }
-  .photo.tall img { aspect-ratio: 4 / 5; }
-  /* etiqueta superior con el dato clave (人口密度 / 人均收入) */
-  .stat { position: fixed; top: 1.6rem; left: 2rem; z-index: 7; opacity: 0; pointer-events: none;
-    transform: translateY(-10px); will-change: opacity, transform; text-align: left;
-    padding: .7rem 1.6rem .8rem; border-radius: 16px; background: #02030acc; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
-    border: 1px solid #ffffff26; box-shadow: 0 10px 30px #0008; }
-  .stat span { display: block; font-size: clamp(.8rem, 1.1vw, 1rem); letter-spacing: .2em; opacity: .8; }
-  .stat b { display: block; margin-top: .15rem; font-size: clamp(1.6rem, 3vw, 2.6rem); font-weight: 700; letter-spacing: .04em; font-variant-numeric: tabular-nums; color: #fff; }
-  /* final: mensaje de agradecimiento sobre la galaxia */
-  .thanks { position: fixed; inset: 0; z-index: 7; display: grid; place-items: center; opacity: 0; pointer-events: none; }
-  .thanks h1 { font-size: clamp(3rem, 10vw, 9rem); font-weight: 700; letter-spacing: .25em; padding-left: .25em; color: #fff;
-    text-shadow: 0 0 40px #7cc4ff99, 0 0 90px #7c5cff55, 0 4px 30px #000; will-change: transform; }
-  #loader { position: fixed; inset: 0; background: #02030a; z-index: 20; display: grid; place-items: center; letter-spacing: .4em; font-size: .8rem; transition: opacity 1s; }
-</style>
+<link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
 <div id="loader" lang="zh-Hans">加载中…</div>
@@ -133,6 +20,9 @@
 </section>
 <section class="panel bottom pop">
   <h1 lang="zh-Hans">马德里</h1>
+</section>
+<section class="panel bottom pop">
+  <h1 lang="zh-Hans">赫罗纳</h1>
 </section>
 
 
@@ -159,12 +49,12 @@
 <div class="city left" id="cityGra" data-lat="37.1761" data-lon="-3.5881"><b></b><span>Granada</span></div>
 <svg id="leader" aria-hidden="true"><line id="leaderLine" x1="0" y1="0" x2="0" y2="0"/><circle id="leaderDot" r="3" cx="0" cy="0"/></svg>
 <figure class="photo l" id="photoBcn">
-  <img src="sagrada_familia.webp" alt="Basílica de la Sagrada Familia sobre los tejados de Barcelona al atardecer">
-  <figcaption><h2>Sagrada Familia <span lang="zh-Hans">（圣家堂）</span></h2></figcaption>
+  <img src="img/lugares/sagrada_familia.webp" alt="Basílica de la Sagrada Familia sobre los tejados de Barcelona al atardecer">
+  <figcaption><h2 lang="zh-Hans"><ruby>圣<rt>shèng</rt></ruby><ruby>家<rt>jiā</rt></ruby><ruby>堂<rt>táng</rt></ruby></h2></figcaption>
 </figure>
 <figure class="photo r" id="photoGra">
-  <img src="alhambra.jpg" alt="La Alhambra de Granada con Sierra Nevada nevada al fondo">
-  <figcaption><h2>La Alhambra <span lang="zh-Hans">（阿尔罕布拉宫）</span></h2></figcaption>
+  <img src="img/lugares/alhambra.jpg" alt="La Alhambra de Granada con Sierra Nevada nevada al fondo">
+  <figcaption><h2 lang="zh-Hans"><ruby>阿<rt>ā</rt></ruby><ruby>尔<rt>ěr</rt></ruby><ruby>罕<rt>hǎn</rt></ruby><ruby>布<rt>bù</rt></ruby><ruby>拉<rt>lā</rt></ruby><ruby>宫<rt>gōng</rt></ruby></h2></figcaption>
 </figure>
 <svg id="arrow" aria-hidden="true">
   <defs><marker id="arrowHead" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#7cc4ff"/></marker></defs>
@@ -173,72 +63,92 @@
 </svg>
 <div class="city left" id="cityAst" data-lat="43.3" data-lon="-5.9"><b></b><span>Asturias</span></div>
 <figure class="photo r" id="photoAst">
-  <img src="asturias.avif" alt="Paisaje de Asturias" decoding="async">
-  <figcaption><h2 lang="zh-Hans">阿斯图里亚斯</h2></figcaption>
+  <img src="img/paisajes/asturias.avif" alt="Paisaje de Asturias" decoding="async">
+  <figcaption><h2 lang="zh-Hans"><ruby>阿<rt>ā</rt></ruby><ruby>斯<rt>sī</rt></ruby><ruby>图<rt>tú</rt></ruby><ruby>里<rt>lǐ</rt></ruby><ruby>亚<rt>yà</rt></ruby><ruby>斯<rt>sī</rt></ruby></h2></figcaption>
 </figure>
 <div class="city" id="cityGip" data-lat="43.3" data-lon="-2.26"><b></b><span>Gipuzkoa</span></div>
 <figure class="photo l tall" id="photoGip">
-  <img src="guipuzkua.webp" alt="Acantilados de flysch de Zumaia, en Gipuzkoa, vistos desde el aire" decoding="async">
-  <figcaption><h2 lang="zh-Hans">吉普斯夸</h2></figcaption>
+  <img src="img/paisajes/gipuzkoa.webp" alt="Acantilados de flysch de Zumaia, en Gipuzkoa, vistos desde el aire" decoding="async">
+  <figcaption><h2 lang="zh-Hans"><ruby>吉<rt>jí</rt></ruby><ruby>普<rt>pǔ</rt></ruby><ruby>斯<rt>sī</rt></ruby><ruby>夸<rt>kuā</rt></ruby></h2></figcaption>
 </figure>
 <div class="city left" id="cityNav" data-lat="42.98" data-lon="-1.09"><b></b><span>Navarra</span></div>
 <figure class="photo r" id="photoNav">
-  <img src="navarra.jpg" alt="Hayedo de la selva de Irati, en Navarra, con colores de otoño" decoding="async">
-  <figcaption><h2 lang="zh-Hans">纳瓦拉</h2></figcaption>
+  <img src="img/paisajes/navarra.jpg" alt="Hayedo de la selva de Irati, en Navarra, con colores de otoño" decoding="async">
+  <figcaption><h2 lang="zh-Hans"><ruby>纳<rt>nà</rt></ruby><ruby>瓦<rt>wǎ</rt></ruby><ruby>拉<rt>lā</rt></ruby></h2></figcaption>
 </figure>
 <div class="city" id="cityVie" data-lat="42.7" data-lon="0.8"><b></b><span>Vielha</span></div>
 <figure class="photo l" id="photoVie">
-  <img src="vielha.jpg" alt="Val d’Aran nevado con casas de montaña y los Pirineos al fondo" decoding="async">
-  <figcaption><h2 lang="zh-Hans">维耶拉</h2></figcaption>
+  <img src="img/paisajes/vielha.jpg" alt="Val d’Aran nevado con casas de montaña y los Pirineos al fondo" decoding="async">
+  <figcaption><h2 lang="zh-Hans"><ruby>维<rt>wéi</rt></ruby><ruby>耶<rt>yē</rt></ruby><ruby>拉<rt>lā</rt></ruby></h2></figcaption>
 </figure>
 <div class="city left" id="cityLle" data-lat="42.08" data-lon="0.69"><b></b><span>Lleida</span></div>
 <figure class="photo r tall" id="photoLle">
-  <img src="lleida.jpeg" alt="Congosto de Mont-rebei, en Lleida, con agua turquesa entre paredes de roca" decoding="async">
-  <figcaption><h2 lang="zh-Hans">莱里达</h2></figcaption>
+  <img src="img/paisajes/lleida.jpeg" alt="Congosto de Mont-rebei, en Lleida, con agua turquesa entre paredes de roca" decoding="async">
+  <figcaption><h2 lang="zh-Hans"><ruby>莱<rt>lái</rt></ruby><ruby>里<rt>lǐ</rt></ruby><ruby>达<rt>dá</rt></ruby></h2></figcaption>
 </figure>
 <div class="city" id="cityMen" data-lat="39.94" data-lon="3.94"><b></b><span>Menorca</span></div>
 <figure class="photo l" id="photoMen">
-  <img src="menorca.jpg" alt="Cala de aguas turquesa rodeada de pinos en Menorca, vista desde el aire" decoding="async">
-  <figcaption><h2 lang="zh-Hans">梅诺卡岛</h2></figcaption>
+  <img src="img/paisajes/menorca.jpg" alt="Cala de aguas turquesa rodeada de pinos en Menorca, vista desde el aire" decoding="async">
+  <figcaption><h2 lang="zh-Hans"><ruby>梅<rt>méi</rt></ruby><ruby>诺<rt>nuò</rt></ruby><ruby>卡<rt>kǎ</rt></ruby><ruby>岛<rt>dǎo</rt></ruby></h2></figcaption>
 </figure>
 <div class="city left" id="cityAlm" data-lat="37.05" data-lon="-2.39"><b></b><span>Almería</span></div>
 <figure class="photo r" id="photoAlm">
-  <img src="almeria.webp" alt="Desierto de Tabernas, en Almería, bajo un cielo azul" decoding="async">
-  <figcaption><h2 lang="zh-Hans">阿尔梅里亚</h2></figcaption>
+  <img src="img/paisajes/almeria.webp" alt="Desierto de Tabernas, en Almería, bajo un cielo azul" decoding="async">
+  <figcaption><h2 lang="zh-Hans"><ruby>阿<rt>ā</rt></ruby><ruby>尔<rt>ěr</rt></ruby><ruby>梅<rt>méi</rt></ruby><ruby>里<rt>lǐ</rt></ruby><ruby>亚<rt>yà</rt></ruby></h2></figcaption>
 </figure>
 <div class="city" id="citySev" data-lat="37.384" data-lon="-5.991"><b></b><span>Sevilla</span></div>
 <figure class="photo l" id="photoSev">
-  <img src="sevilla.jpg" alt="Patio de las Doncellas del Real Alcázar de Sevilla" decoding="async">
-  <figcaption><h2 lang="zh-Hans">塞维利亚</h2></figcaption>
+  <img src="img/paisajes/sevilla.jpg" alt="Patio de las Doncellas del Real Alcázar de Sevilla" decoding="async">
+  <figcaption><h2 lang="zh-Hans"><ruby>塞<rt>sài</rt></ruby><ruby>维<rt>wéi</rt></ruby><ruby>利<rt>lì</rt></ruby><ruby>亚<rt>yà</rt></ruby></h2></figcaption>
 </figure>
 <div class="city left" id="cityJam" data-lat="39.2" data-lon="-6.15"><b></b><span>Extremadura</span></div>
 <figure class="photo r" id="photoJam">
-  <img src="jamon_extremedura.webp" alt="Jamón ibérico cortado a cuchillo en su soporte, con un plato de lonchas" decoding="async">
-  <figcaption><h2 lang="zh-Hans">火腿</h2></figcaption>
+  <img src="img/gastronomia/jamon_extremadura.webp" alt="Jamón ibérico cortado a cuchillo en su soporte, con un plato de lonchas" decoding="async">
+  <figcaption><h2 lang="zh-Hans"><ruby>火<rt>huǒ</rt></ruby><ruby>腿<rt>tuǐ</rt></ruby></h2></figcaption>
 </figure>
 <div class="city" id="cityVin" data-lat="42.47" data-lon="-2.45"><b></b><span>La Rioja</span></div>
 <figure class="photo l" id="photoVin">
-  <img src="vino_rioja.jpg" alt="Vino tinto sirviéndose en una copa, con barricas de roble al fondo" decoding="async">
-  <figcaption><h2 lang="zh-Hans">红葡萄酒</h2></figcaption>
+  <img src="img/gastronomia/vino_rioja.jpg" alt="Vino tinto sirviéndose en una copa, con barricas de roble al fondo" decoding="async">
+  <figcaption><h2 lang="zh-Hans"><ruby>红<rt>hóng</rt></ruby><ruby>葡<rt>pú</rt></ruby><ruby>萄<rt>táo</rt></ruby><ruby>酒<rt>jiǔ</rt></ruby></h2></figcaption>
 </figure>
 <div class="city left" id="cityPae" data-lat="39.47" data-lon="-0.376"><b></b><span>Valencia</span></div>
 <figure class="photo r tall" id="photoPae">
-  <img src="paella_valencia.jpg" alt="Paella de marisco con gambas, mejillones y almejas en una paellera" decoding="async">
-  <figcaption><h2 lang="zh-Hans">西班牙海鲜饭</h2></figcaption>
+  <img src="img/gastronomia/paella_valencia.jpg" alt="Paella de marisco con gambas, mejillones y almejas en una paellera" decoding="async">
+  <figcaption><h2 lang="zh-Hans"><ruby>西<rt>xī</rt></ruby><ruby>班<rt>bān</rt></ruby><ruby>牙<rt>yá</rt></ruby><ruby>海<rt>hǎi</rt></ruby><ruby>鲜<rt>xiān</rt></ruby><ruby>饭<rt>fàn</rt></ruby></h2></figcaption>
 </figure>
 <div class="stat" id="statPop" lang="zh-Hans"><span>西班牙总人口</span><b id="statPopVal">—</b></div>
 <div class="stat" id="statInc" lang="zh-Hans"><span>人均年收入</span><b>15,948 欧元</b></div>
 <div class="thanks" id="thanks" lang="zh-Hans"><h1>谢谢大家</h1></div>
+<div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Imagen ampliada" hidden>
+  <button class="lb-close" id="lbClose" aria-label="Cerrar">×</button>
+  <figure><img id="lbImg" alt=""><figcaption id="lbCap"></figcaption></figure>
+</div>
+<div class="city" id="gironaMark" lang="zh-Hans" data-lat="41.983" data-lon="2.824"><b></b><span>赫罗纳</span></div>
+<div class="city" id="cityGir" data-lat="41.983" data-lon="2.824"><b></b><span>Girona</span></div>
+<figure class="photo l" id="photoGir">
+  <img src="img/girona/girona_ciudad.webp" alt="Casas de colores junto al río Onyar en Girona, con la torre de la iglesia de Sant Feliu al fondo" decoding="async">
+  <figcaption><h2 lang="zh-Hans"><ruby>赫<rt>hè</rt></ruby><ruby>罗<rt>luó</rt></ruby><ruby>纳<rt>nà</rt></ruby></h2></figcaption>
+</figure>
+<div class="city left" id="cityTos" data-lat="41.717" data-lon="2.932"><b></b><span>Tossa de Mar</span></div>
+<figure class="photo r" id="photoTos">
+  <img src="img/girona/girona_tossa_mar.webp" alt="Vila Vella amurallada de Tossa de Mar sobre una cala de agua turquesa" decoding="async">
+  <figcaption><h2 lang="zh-Hans"><ruby>托<rt>tuō</rt></ruby><ruby>萨<rt>sà</rt></ruby><ruby>德<rt>dé</rt></ruby><ruby>马<rt>mǎ</rt></ruby><ruby>尔<rt>ěr</rt></ruby></h2></figcaption>
+</figure>
+<div class="city" id="cityEsc" data-lat="42.125" data-lon="3.135"><b></b><span>L'Escala</span></div>
+<figure class="photo l tall" id="photoEsc">
+  <img src="img/girona/girona_lescala.jpg" alt="Costa de la Costa Brava con edificios blancos, un castillo en la colina y los Pirineos nevados al fondo" decoding="async">
+  <figcaption><h2 lang="zh-Hans"><ruby>莱<rt>lái</rt></ruby><ruby>斯<rt>sī</rt></ruby><ruby>卡<rt>kǎ</rt></ruby><ruby>拉<rt>lā</rt></ruby></h2></figcaption>
+</figure>
 <div class="pin" id="pin" lang="zh-Hans">马德里</div>
 <div class="hint" id="hint" lang="zh-Hans"><span>向下滑动</span><i></i></div>
 <div class="dots" id="dots" role="navigation" aria-label="Etapas">
-  <button data-i="0" lang="zh-Hans">地球</button><button data-i="1" lang="zh-Hans">欧洲</button><button data-i="2" lang="zh-Hans">西班牙</button><button data-i="3" lang="zh-Hans">马德里</button><button data-i="4" data-to="5" lang="zh-Hans">名胜</button><button data-i="6" data-to="13" lang="zh-Hans">风景</button><button data-i="14" data-to="16" lang="zh-Hans">美食</button><button data-i="17" lang="zh-Hans">语言</button><button data-i="18" lang="zh-Hans">人口密度</button><button data-i="19" lang="zh-Hans">人均收入</button><button data-i="20" lang="zh-Hans">谢谢</button>
+  <button data-i="0" lang="zh-Hans">地球</button><button data-i="1" lang="zh-Hans">欧洲</button><button data-i="2" lang="zh-Hans">西班牙</button><button data-i="3" lang="zh-Hans">马德里</button><button data-i="4" data-to="7" lang="zh-Hans">赫罗纳</button><button data-i="8" data-to="9" lang="zh-Hans">名胜</button><button data-i="10" data-to="17" lang="zh-Hans">风景</button><button data-i="18" data-to="20" lang="zh-Hans">美食</button><button data-i="21" lang="zh-Hans">语言</button><button data-i="22" lang="zh-Hans">人口密度</button><button data-i="23" lang="zh-Hans">人均收入</button><button data-i="24" lang="zh-Hans">谢谢</button>
 </div>
 <div class="alt" lang="zh-Hans">高度 <span id="alt">—</span> 公里</div>
 
-<script src="poblacion.js"></script>
-<script src="municipios.js"></script>
-<script src="renta.js"></script>
+<script src="data/poblacion.js"></script>
+<script src="data/municipios.js"></script>
+<script src="data/renta.js"></script>
 <script type="importmap">
 { "imports": { "three": "https://unpkg.com/three@0.160.0/build/three.module.js" } }
 </script>
@@ -815,24 +725,29 @@ const stages = [
   { dist: 1.2,  fov: 28, tilt: 0.1,  q: quatFor(40.0, -3.7) },
   { dist: 1.2,  fov: 28, tilt: 0.1,  q: quatFor(40.0, -3.7) }, // misma vista: solo se señala Madrid
 ];
+// Girona: primero se señala la ciudad (como Madrid) y después sus lugares, uno por etapa
+stages.push({ dist: 1.2, fov: 28, tilt: 0.1, q: quatFor(41.0, -0.6) }); // 4 Girona (señalar la ciudad)
+stages.push({ dist: 1.12, fov: 28, tilt: 0.08, q: quatFor(41.83, 1.52) }); // 5 Girona: Girona
+stages.push({ dist: 1.12, fov: 28, tilt: 0.08, q: quatFor(41.57, 4.23) }); // 6 Girona: Tossa de Mar
+stages.push({ dist: 1.12, fov: 28, tilt: 0.08, q: quatFor(41.98, 1.83) }); // 7 Girona: L'Escala
 // Lugares: Barcelona (a la derecha, foto a la izquierda) y Granada (a la izquierda, foto a la derecha)
-stages.push({ dist: 1.3, fov: 28, tilt: 0.08, q: quatFor(40.6, -3.2) });  // 4 Barcelona
-stages.push({ dist: 1.3, fov: 28, tilt: 0.08, q: quatFor(38.3, 0.2) });   // 5 Granada
-stages.push({ dist: 1.3, fov: 28, tilt: 0.08, q: quatFor(43.00, -3.30) }); // 6 Paisaje: Asturias
-stages.push({ dist: 1.3, fov: 28, tilt: 0.08, q: quatFor(43.00, -4.86) }); // 7 Paisaje: Gipuzkoa
-stages.push({ dist: 1.3, fov: 28, tilt: 0.08, q: quatFor(42.68, 1.51) }); // 8 Paisaje: Navarra
-stages.push({ dist: 1.3, fov: 28, tilt: 0.08, q: quatFor(42.40, -1.80) }); // 9 Paisaje: Vielha
-stages.push({ dist: 1.3, fov: 28, tilt: 0.08, q: quatFor(41.78, 3.29) }); // 10 Paisaje: Lleida
-stages.push({ dist: 1.3, fov: 28, tilt: 0.08, q: quatFor(39.64, 1.34) }); // 11 Paisaje: Menorca
-stages.push({ dist: 1.3, fov: 28, tilt: 0.08, q: quatFor(36.75, 0.21) }); // 12 Paisaje: Almería
-stages.push({ dist: 1.3, fov: 28, tilt: 0.08, q: quatFor(37.08, -8.59) }); // 13 Paisaje: Sevilla
-stages.push({ dist: 1.3, fov: 28, tilt: 0.08, q: quatFor(38.90, -3.55) }); // 14 Gastronomía: Extremadura
-stages.push({ dist: 1.3, fov: 28, tilt: 0.08, q: quatFor(42.17, -5.05) }); // 15 Gastronomía: La Rioja
-stages.push({ dist: 1.3, fov: 28, tilt: 0.08, q: quatFor(39.17, 2.22) }); // 16 Gastronomía: Valencia
-stages.push(MAP_VIEW); // 17 mapa de idiomas
-stages.push(MAP_VIEW); // 18 densidad de población
-stages.push(MAP_VIEW); // 19 renta por persona
-stages.push({ dist: 45, fov: 55, tilt: 0, q: quatFor(40.0, -3.7) }); // 20 final: la Tierra se pierde en la galaxia
+stages.push({ dist: 1.3, fov: 28, tilt: 0.08, q: quatFor(40.6, -3.2) });  // 8 Barcelona
+stages.push({ dist: 1.3, fov: 28, tilt: 0.08, q: quatFor(38.3, 0.2) });   // 9 Granada
+stages.push({ dist: 1.3, fov: 28, tilt: 0.08, q: quatFor(43.00, -3.30) }); // 10 Paisaje: Asturias
+stages.push({ dist: 1.3, fov: 28, tilt: 0.08, q: quatFor(43.00, -4.86) }); // 11 Paisaje: Gipuzkoa
+stages.push({ dist: 1.3, fov: 28, tilt: 0.08, q: quatFor(42.68, 1.51) }); // 12 Paisaje: Navarra
+stages.push({ dist: 1.3, fov: 28, tilt: 0.08, q: quatFor(42.40, -1.80) }); // 13 Paisaje: Vielha
+stages.push({ dist: 1.3, fov: 28, tilt: 0.08, q: quatFor(41.78, 3.29) }); // 14 Paisaje: Lleida
+stages.push({ dist: 1.3, fov: 28, tilt: 0.08, q: quatFor(39.64, 1.34) }); // 15 Paisaje: Menorca
+stages.push({ dist: 1.3, fov: 28, tilt: 0.08, q: quatFor(36.75, 0.21) }); // 16 Paisaje: Almería
+stages.push({ dist: 1.3, fov: 28, tilt: 0.08, q: quatFor(37.08, -8.59) }); // 17 Paisaje: Sevilla
+stages.push({ dist: 1.3, fov: 28, tilt: 0.08, q: quatFor(38.90, -3.55) }); // 18 Gastronomía: Extremadura
+stages.push({ dist: 1.3, fov: 28, tilt: 0.08, q: quatFor(42.17, -5.05) }); // 19 Gastronomía: La Rioja
+stages.push({ dist: 1.3, fov: 28, tilt: 0.08, q: quatFor(39.17, 2.22) }); // 20 Gastronomía: Valencia
+stages.push(MAP_VIEW); // 21 mapa de idiomas
+stages.push(MAP_VIEW); // 22 densidad de población
+stages.push(MAP_VIEW); // 23 renta por persona
+stages.push({ dist: 45, fov: 55, tilt: 0, q: quatFor(40.0, -3.7) }); // 24 final: la Tierra se pierde en la galaxia
 const LAST = stages.length - 1;
 const legend2 = document.getElementById('legend2');
 const statPop = document.getElementById('statPop'), statInc = document.getElementById('statInc');
@@ -843,19 +758,22 @@ if (window.POBLACION) {
 }
 const legend3 = document.getElementById('legend3');
 const cities = [
-  { el: document.getElementById('cityBcn'), photo: document.getElementById('photoBcn'), k: 4, side: 'l' },
-  { el: document.getElementById('cityGra'), photo: document.getElementById('photoGra'), k: 5, side: 'r' },
-  { el: document.getElementById('cityAst'), photo: document.getElementById('photoAst'), k: 6, side: 'r' },
-  { el: document.getElementById('cityGip'), photo: document.getElementById('photoGip'), k: 7, side: 'l' },
-  { el: document.getElementById('cityNav'), photo: document.getElementById('photoNav'), k: 8, side: 'r' },
-  { el: document.getElementById('cityVie'), photo: document.getElementById('photoVie'), k: 9, side: 'l' },
-  { el: document.getElementById('cityLle'), photo: document.getElementById('photoLle'), k: 10, side: 'r' },
-  { el: document.getElementById('cityMen'), photo: document.getElementById('photoMen'), k: 11, side: 'l' },
-  { el: document.getElementById('cityAlm'), photo: document.getElementById('photoAlm'), k: 12, side: 'r' },
-  { el: document.getElementById('citySev'), photo: document.getElementById('photoSev'), k: 13, side: 'l' },
-  { el: document.getElementById('cityJam'), photo: document.getElementById('photoJam'), k: 14, side: 'r' },
-  { el: document.getElementById('cityVin'), photo: document.getElementById('photoVin'), k: 15, side: 'l' },
-  { el: document.getElementById('cityPae'), photo: document.getElementById('photoPae'), k: 16, side: 'r' },
+  { el: document.getElementById('cityGir'), photo: document.getElementById('photoGir'), k: 5, side: 'l' },
+  { el: document.getElementById('cityTos'), photo: document.getElementById('photoTos'), k: 6, side: 'r' },
+  { el: document.getElementById('cityEsc'), photo: document.getElementById('photoEsc'), k: 7, side: 'l' },
+  { el: document.getElementById('cityBcn'), photo: document.getElementById('photoBcn'), k: 8, side: 'l' },
+  { el: document.getElementById('cityGra'), photo: document.getElementById('photoGra'), k: 9, side: 'r' },
+  { el: document.getElementById('cityAst'), photo: document.getElementById('photoAst'), k: 10, side: 'r' },
+  { el: document.getElementById('cityGip'), photo: document.getElementById('photoGip'), k: 11, side: 'l' },
+  { el: document.getElementById('cityNav'), photo: document.getElementById('photoNav'), k: 12, side: 'r' },
+  { el: document.getElementById('cityVie'), photo: document.getElementById('photoVie'), k: 13, side: 'l' },
+  { el: document.getElementById('cityLle'), photo: document.getElementById('photoLle'), k: 14, side: 'r' },
+  { el: document.getElementById('cityMen'), photo: document.getElementById('photoMen'), k: 15, side: 'l' },
+  { el: document.getElementById('cityAlm'), photo: document.getElementById('photoAlm'), k: 16, side: 'r' },
+  { el: document.getElementById('citySev'), photo: document.getElementById('photoSev'), k: 17, side: 'l' },
+  { el: document.getElementById('cityJam'), photo: document.getElementById('photoJam'), k: 18, side: 'r' },
+  { el: document.getElementById('cityVin'), photo: document.getElementById('photoVin'), k: 19, side: 'l' },
+  { el: document.getElementById('cityPae'), photo: document.getElementById('photoPae'), k: 20, side: 'r' },
 ].map(c => ({ ...c, v: latLonToVec(+c.el.dataset.lat, +c.el.dataset.lon).multiplyScalar(1.002) }));
 const leaderSvg = document.getElementById('leader');
 const leaderLine = document.getElementById('leaderLine');
@@ -883,9 +801,37 @@ const readScroll = () => { target = Math.min(Math.max(scrollY / maxScroll(), 0),
 addEventListener('scroll', readScroll, { passive: true });
 readScroll();
 
+// ---------- Visor de imágenes: al pulsar una foto se amplía ----------
+const lightbox = document.getElementById('lightbox'), lbImg = document.getElementById('lbImg'), lbCap = document.getElementById('lbCap');
+let lbLastFocus = null;
+const openLightbox = fig => {
+  const img = fig.querySelector('img'), cap = fig.querySelector('figcaption');
+  lbImg.src = img.currentSrc || img.src; lbImg.alt = img.alt;
+  lbCap.innerHTML = cap ? cap.innerHTML : '';
+  lbLastFocus = document.activeElement;
+  lightbox.hidden = false;
+  requestAnimationFrame(() => lightbox.classList.add('open'));
+  document.documentElement.classList.add('lb-lock'); // bloquea el scroll de la presentación
+  document.getElementById('lbClose').focus();
+};
+const closeLightbox = () => {
+  lightbox.classList.remove('open');
+  document.documentElement.classList.remove('lb-lock');
+  setTimeout(() => { if (!lightbox.classList.contains('open')) lightbox.hidden = true; }, 300);
+  if (lbLastFocus) lbLastFocus.focus();
+};
+document.querySelectorAll('figure.photo').forEach(fig => {
+  fig.tabIndex = -1;
+  fig.setAttribute('role', 'button');
+  fig.setAttribute('aria-label', 'Ampliar imagen');
+  fig.addEventListener('click', () => openLightbox(fig));
+  fig.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openLightbox(fig); } });
+});
+lightbox.addEventListener('click', closeLightbox);
 const goTo = i => scrollTo({ top: Math.min(Math.max(i, 0), LAST) / LAST * maxScroll(), behavior: 'smooth' });
 dots.forEach(b => b.addEventListener('click', () => goTo(+b.dataset.i)));
 addEventListener('keydown', e => {
+  if (!lightbox.hidden) { if (e.key === 'Escape') closeLightbox(); e.preventDefault(); return; }
   const cur = Math.round(target * LAST);
   if (['ArrowDown', 'PageDown', ' ', 'ArrowRight'].includes(e.key)) { e.preventDefault(); goTo(cur + 1); }
   if (['ArrowUp', 'PageUp', 'ArrowLeft'].includes(e.key)) { e.preventDefault(); goTo(cur - 1); }
@@ -898,6 +844,8 @@ const lerp = (a, b, t) => a + (b - a) * t;
 const tmp = new THREE.Vector3();
 const qa = new THREE.Quaternion(), yAxis = new THREE.Vector3(0, 1, 0);
 const clock = new THREE.Clock();
+const gironaMark = document.getElementById('gironaMark');
+const gironaV = latLonToVec(41.983, 2.824).multiplyScalar(1.002);
 const thanksEl = document.getElementById('thanks'), thanksH = thanksEl.querySelector('h1');
 // orientación final del cielo: la banda de la Vía Láctea cruza la pantalla en diagonal
 const galaxyN = new THREE.Vector3(0.55, 0.83, 0).normalize();
@@ -933,20 +881,20 @@ function frame() {
   const spin = qa.clone().setFromAxisAngle(yAxis, 0.4 + t * 0.06).premultiply(userQ);
   const qA = A.q || spin;
   earth.quaternion.copy(qA).slerp(Bn.q, f);
-  const endA = smoother((s - 19.15) / 0.75);            // progreso del alejamiento final
-  const earthScale = 1 - 0.9995 * smoother((s - 19.4) / 0.55);
+  const endA = smoother((s - 23.15) / 0.75);            // progreso del alejamiento final
+  const earthScale = 1 - 0.9995 * smoother((s - 23.4) / 0.55);
   earth.scale.setScalar(earthScale); atmos.scale.setScalar(earthScale);
   earth.visible = atmos.visible = earthScale > 0.002;
 
   // el cielo solo gira muy despacio alrededor del eje de la galaxia (la banda no se desplaza)
   stars.quaternion.copy(qSky.setFromAxisAngle(galaxyN, t * 0.002)).multiply(qGalaxy);
-  const skyA = 1 - 0.5 * smoother(Math.min(s, 19) / 19) + 0.5 * endA;
+  const skyA = 1 - 0.5 * smoother(Math.min(s, 23) / 23) + 0.5 * endA;
   starMat.uniforms.uTime.value = t;
   starMat.uniforms.uOpacity.value = skyA;
   for (const n of nebulae) n.m.opacity = n.base * skyA * (1 + 1.5 * endA);
   // estrellas fugaces solo mientras se ve el espacio (Espacio y Europa)
   const dtM = Math.min(Math.max(t - (frame.lastT ?? t), 0), 0.05); frame.lastT = t;
-  updateMeteors(t, dtM, Math.max(1 - smoother((s - 0.8) / 0.6), smoother((s - 19.8) / 0.15)));
+  updateMeteors(t, dtM, Math.max(1 - smoother((s - 0.8) / 0.6), smoother((s - 23.8) / 0.15)));
 
   // marcador de Madrid: aparece en la última etapa
   // transición imagen real -> mapa pintado
@@ -955,11 +903,11 @@ function frame() {
   //  - entrada: primero el globo pintado (opaco) y después, encima, el mapa de idiomas
   //  - cada mapa nuevo se funde sobre el anterior opaco; el de debajo se oculta cuando el de arriba ya es opaco
   //  - salida: primero se va el mapa temático (sobre el globo pintado opaco) y después el globo pintado
-  const globeA = smoother((s - 16.1) / 0.35) * (1 - smoother((s - 19.25) / 0.35));
-  const themOn = 1 - smoother((s - 19.1) / 0.3);
-  const langA = smoother((s - 16.4) / 0.35);
-  const densA = smoother((s - 17.15) / 0.6);
-  const rentaA = smoother((s - 18.15) / 0.6);
+  const globeA = smoother((s - 20.1) / 0.35) * (1 - smoother((s - 23.25) / 0.35));
+  const themOn = 1 - smoother((s - 23.1) / 0.3);
+  const langA = smoother((s - 20.4) / 0.35);
+  const densA = smoother((s - 21.15) / 0.6);
+  const rentaA = smoother((s - 22.15) / 0.6);
   if (globeMat) globeMat.opacity = globeA;
   if (mapMat) mapMat.opacity = densA > 0.999 ? 0 : langA * themOn;
   if (densMat) densMat.opacity = rentaA > 0.999 ? 0 : densA * themOn;
@@ -979,23 +927,31 @@ function frame() {
   pinEl.style.transform = `translate(${(tmp.x * 0.5 + 0.5) * innerWidth + 18}px, ${(-tmp.y * 0.5 + 0.5) * innerHeight - 10}px)`;
 
   // etiquetas de idiomas
-  const la = smoother((s - 16.65) / 0.3) * (1 - smoother((s - 17.05) / 0.3));
+  const la = smoother((s - 20.65) / 0.3) * (1 - smoother((s - 21.05) / 0.3));
   for (const l of lbls) {
     tmp.copy(l.v).applyMatrix4(earth.matrixWorld).project(camera);
     l.el.style.opacity = la;
     l.el.style.transform = `translate(${(tmp.x * 0.5 + 0.5) * innerWidth}px, ${(-tmp.y * 0.5 + 0.5) * innerHeight}px) translate(-50%, -50%)`;
   }
   legend.style.opacity = la;
-  legend2.style.opacity = smoother((s - 17.6) / 0.3) * (1 - smoother((s - 18.05) / 0.3));
-  legend3.style.opacity = smoother((s - 18.6) / 0.3) * (1 - smoother((s - 19.05) / 0.25));
-  const popA = smoother((s - 17.6) / 0.3) * (1 - smoother((s - 18.05) / 0.3));
-  const incA = smoother((s - 18.6) / 0.3) * (1 - smoother((s - 19.05) / 0.25));
+  legend2.style.opacity = smoother((s - 21.6) / 0.3) * (1 - smoother((s - 22.05) / 0.3));
+  legend3.style.opacity = smoother((s - 22.6) / 0.3) * (1 - smoother((s - 23.05) / 0.25));
+  const popA = smoother((s - 21.6) / 0.3) * (1 - smoother((s - 22.05) / 0.3));
+  const incA = smoother((s - 22.6) / 0.3) * (1 - smoother((s - 23.05) / 0.25));
   // 谢谢大家: aparece cuando la Tierra ya se ha perdido entre las estrellas
-  const thA = smoother((s - 19.6) / 0.35);
+  const thA = smoother((s - 23.6) / 0.35);
   thanksEl.style.opacity = thA;
   thanksH.style.transform = `scale(${0.92 + 0.08 * thA})`;
   statPop.style.opacity = popA; statPop.style.transform = `translateY(${(1 - popA) * -10}px)`;
   statInc.style.opacity = incA; statInc.style.transform = `translateY(${(1 - incA) * -10}px)`;
+
+  // Girona: marcador de la ciudad (etapa 4)
+  const girA = stageVis(s, 4);
+  gironaMark.style.opacity = girA;
+  if (girA > 0.001) {
+    tmp.copy(gironaV).applyMatrix4(earth.matrixWorld).project(camera);
+    gironaMark.style.transform = `translate(${(tmp.x * 0.5 + 0.5) * innerWidth}px, ${(-tmp.y * 0.5 + 0.5) * innerHeight}px)`;
+  }
 
   // ciudades con monumento
   let leaderA = 0;
@@ -1006,6 +962,9 @@ function frame() {
     c.el.style.opacity = a;
     c.el.style.transform = `translate(${x}px, ${y}px)`;
     c.photo.style.opacity = a;
+    const clickable = a > 0.6;
+    c.photo.style.pointerEvents = clickable ? 'auto' : 'none';
+    c.photo.tabIndex = clickable ? 0 : -1;
     c.photo.style.transform = `translateY(calc(-50% + ${(1 - a) * 24}px))`;
     if (a > leaderA) {
       leaderA = a;
@@ -1067,7 +1026,7 @@ function frame() {
 
   // cámara del cielo: sigue la orientación de la cámara principal, pero en el alejamiento final
   // se queda quieta para que las estrellas no se muevan mientras la Tierra se pierde a lo lejos
-  if (s <= 19) skyQ.copy(camera.quaternion);
+  if (s <= 23) skyQ.copy(camera.quaternion);
   skyCam.quaternion.copy(skyQ);
   renderer.clear();
   renderer.render(skyScene, skyCam);

@@ -1,4 +1,4 @@
-// Genera renta.js: renta neta media por persona de cada municipio (INE, Atlas de Distribución de Renta de los Hogares).
+// Genera data/renta.js: renta neta media por persona de cada municipio (INE, Atlas de Distribución de Renta de los Hogares).
 // El INE publica una tabla por provincia; se descargan todas en streaming y se quedan solo las filas municipales.
 // Uso: node tools/build-renta.mjs
 import { writeFileSync, appendFileSync } from 'node:fs';
@@ -62,7 +62,7 @@ await Promise.all(Array.from({ length: 4 }, worker));
 const codes = Object.keys(best);
 const year = Math.max(...codes.map(c => best[c].year));
 const out = Object.fromEntries(codes.map(c => [c, best[c].value]));
-writeFileSync(new URL('../renta.js', import.meta.url),
+writeFileSync(new URL('../data/renta.js', import.meta.url),
   `// Renta neta media por persona (€) por municipio. INE, Atlas de Distribución de Renta de los Hogares ${year}.\n` +
   `// Generado por tools/build-renta.mjs\nwindow.RENTA_YEAR = ${year};\nwindow.RENTA = ${JSON.stringify(out)};\n`);
 log(`FIN municipios: ${codes.length}, año ${year}, Madrid 28079 = ${out['28079']}, Pozuelo 28115 = ${out['28115']}`);

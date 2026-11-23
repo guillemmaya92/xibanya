@@ -1,0 +1,147 @@
+/* Estilos de la presentación (extraídos de index.html) */
+:root { --accent: #7cc4ff; }
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { background: #02030a; }
+body { font-family: "Segoe UI", system-ui, "Microsoft YaHei", "PingFang SC", "Noto Sans SC", sans-serif; color: #eaf2ff; height: 4700vh; }
+canvas { position: fixed; inset: 0; width: 100%; height: 100%; display: block; touch-action: pan-y; }
+canvas.grab { cursor: grab; }
+canvas.grabbing { cursor: grabbing; }
+.panel {
+  position: fixed; left: 50%; top: 50%; z-index: 5;
+  transform: translate(-50%, -46%); text-align: center; width: min(90vw, 760px);
+  opacity: 0; pointer-events: none; filter: blur(8px);
+  transition: opacity .9s ease, transform .9s ease, filter .9s ease;
+  text-shadow: 0 2px 30px #000, 0 0 8px #0008;
+}
+.panel.active { opacity: 1; transform: translate(-50%, -50%); filter: blur(0); }
+.panel.top { top: 17vh; }
+.panel.bottom { top: auto; bottom: 11vh; transform: translate(-50%, 20px); }
+.panel.bottom.active { transform: translate(-50%, 0); }
+.panel small { display: block; margin-bottom: .8rem; font-size: .75rem; letter-spacing: .4em; text-transform: uppercase; color: var(--accent); }
+.panel h1 { font-size: clamp(2.4rem, 8vw, 6rem); font-weight: 200; letter-spacing: .08em; }
+.panel p { margin-top: 1rem; font-size: clamp(1rem, 2vw, 1.25rem); opacity: .85; line-height: 1.6; }
+.hint {
+  position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%); z-index: 6;
+  font-size: .75rem; letter-spacing: .3em; text-transform: uppercase; opacity: .7;
+  display: flex; flex-direction: column; align-items: center; gap: .6rem; transition: opacity .4s;
+}
+.hint i { width: 1px; height: 36px; background: linear-gradient(var(--accent), transparent); animation: drop 1.6s infinite; }
+@keyframes drop { 0% { transform: scaleY(0); transform-origin: top; } 50% { transform: scaleY(1); transform-origin: top; } 51% { transform-origin: bottom; } 100% { transform: scaleY(0); transform-origin: bottom; } }
+/* índice de etapas: panel oscuro translúcido, legible sobre el espacio y sobre los mapas claros */
+.dots {
+  position: fixed; right: 1.4rem; top: 50%; transform: translateY(-50%); z-index: 8;
+  display: flex; flex-direction: column; gap: .25rem; padding: .7rem;
+  background: #02030ab3; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+  border: 1px solid #ffffff26; border-radius: 16px; box-shadow: 0 8px 30px #0006;
+  counter-reset: etapa;
+}
+.dots button {
+  all: unset; cursor: pointer; position: relative; counter-increment: etapa;
+  display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+  padding: .55rem .8rem; border-radius: 10px; min-width: 9.5rem;
+  font-size: .72rem; font-weight: 600; letter-spacing: .2em; text-transform: uppercase;
+  color: #eaf2ffb3; transition: background .3s, color .3s;
+}
+.dots button::before { content: counter(etapa, decimal-leading-zero); font-size: .65rem; letter-spacing: .1em; opacity: .55; font-variant-numeric: tabular-nums; }
+.dots button::after { content: ""; flex: none; width: 9px; height: 9px; border-radius: 50%; border: 1.5px solid currentColor; transition: all .3s; }
+.dots button:hover { background: #ffffff14; color: #fff; }
+.dots button.on { background: #7cc4ff26; color: #fff; }
+.dots button.on::before { opacity: 1; color: var(--accent); }
+.dots button.on::after { background: var(--accent); border-color: var(--accent); box-shadow: 0 0 12px var(--accent); }
+.dots button:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
+.alt { position: fixed; left: 2rem; bottom: 2rem; z-index: 6; font-size: .8rem; letter-spacing: .15em; font-variant-numeric: tabular-nums; padding: .5rem .9rem; border-radius: 999px; background: #02030ab3; backdrop-filter: blur(10px); border: 1px solid #ffffff26; color: #eaf2ffd9; }
+.pin { position: fixed; z-index: 4; left: 0; top: 0; pointer-events: none; opacity: 0; font-size: 1rem; letter-spacing: .35em; text-transform: uppercase; text-shadow: 0 1px 12px #000; will-change: transform, opacity; white-space: nowrap; }
+.pin::before { content: ""; display: inline-block; width: 12px; height: 12px; margin-right: .8rem; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 5px #7cc4ff55, 0 0 24px var(--accent); }
+.lbl { position: fixed; z-index: 4; left: 0; top: 0; pointer-events: none; opacity: 0; font-weight: 700; font-size: clamp(.8rem, 1.6vw, 1.15rem); letter-spacing: .12em; text-transform: uppercase; color: #fff; text-shadow: 0 1px 3px #000c, 0 0 14px #0009; transform: translate(-50%, -50%); will-change: transform, opacity; white-space: nowrap; }
+.legend { position: fixed; left: 2rem; top: 50%; transform: translateY(-50%); z-index: 6; opacity: 0; pointer-events: none; background: #02030a99; backdrop-filter: blur(10px); border: 1px solid #ffffff22; border-radius: 14px; padding: 1.2rem 1.4rem; display: grid; gap: .9rem; }
+.legend header { margin-bottom: .2rem; }
+.legend header span { display: block; font-size: .7rem; letter-spacing: .35em; text-transform: uppercase; color: var(--accent); margin-bottom: .5rem; }
+.legend h2 { font-size: clamp(1.4rem, 2.6vw, 2.1rem); font-weight: 300; letter-spacing: .04em; line-height: 1.15; max-width: 230px; }
+.legend div { display: flex; align-items: center; gap: .8rem; font-size: 1rem; letter-spacing: .08em; }
+.legend i { width: 18px; height: 18px; border-radius: 5px; display: inline-block; }
+.legend small { font-size: .7rem; opacity: .6; max-width: 190px; line-height: 1.4; }
+.legend .ramp { display: grid; gap: .35rem; }
+.legend .ramp div { gap: .7rem; font-size: .85rem; font-variant-numeric: tabular-nums; }
+.legend .ramp i { width: 26px; height: 14px; border-radius: 3px; }
+/* ciudades y monumentos */
+.city { position: fixed; z-index: 4; left: 0; top: 0; pointer-events: none; opacity: 0; will-change: transform, opacity;
+  font-size: .95rem; font-weight: 600; letter-spacing: .3em; text-transform: uppercase; white-space: nowrap; text-shadow: 0 1px 10px #000, 0 0 4px #000; }
+.city b { position: absolute; left: -7px; top: -7px; width: 14px; height: 14px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 4px #7cc4ff55, 0 0 22px var(--accent); }
+.city b::after { content: ""; position: absolute; inset: -4px; border-radius: 50%; border: 2px solid var(--accent); animation: ping 1.8s ease-out infinite; }
+.city span { position: absolute; left: 18px; top: -.7em; }
+.city.left span { left: auto; right: 18px; }
+@keyframes ping { from { transform: scale(1); opacity: .9; } to { transform: scale(3.2); opacity: 0; } }
+.photo { position: fixed; z-index: 7; top: 50%; width: min(34vw, 480px); margin: 0; opacity: 0; pointer-events: none;
+  transform: translateY(-50%); background: #02030acc; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  border: 1px solid #ffffff26; border-radius: 18px; overflow: hidden; box-shadow: 0 20px 60px #000a; will-change: opacity, transform; }
+.photo.l { left: 2rem; }
+.photo.r { right: 14rem; }
+.photo img { display: block; width: 100%; aspect-ratio: 3 / 2; object-fit: cover; }
+.photo figcaption { padding: 1rem 1.3rem 1.2rem; }
+.photo figcaption span { display: block; font-size: .7rem; letter-spacing: .35em; text-transform: uppercase; color: var(--accent); margin-bottom: .4rem; }
+.photo h2 { font-size: clamp(1.4rem, 2.4vw, 2rem); font-weight: 300; letter-spacing: .03em; }
+.photo p { margin-top: .4rem; font-size: .9rem; line-height: 1.5; opacity: .8; }
+#leader { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 6; pointer-events: none; }
+#leader line { stroke: var(--accent); stroke-width: 1.5; stroke-dasharray: 4 5; filter: drop-shadow(0 0 4px #000); }
+#leader circle { fill: var(--accent); }
+/* títulos laterales señalados con flecha (Tierra, Europa, España) */
+.panel.side { left: 6vw; top: 50%; width: min(34vw, 440px); text-align: left; transform: translate(0, -46%); }
+.panel.side.active { transform: translate(0, -50%); }
+.panel.side h1 { display: inline-block; font-size: clamp(2rem, 4.6vw, 4.2rem); line-height: 1.05; }
+#arrow { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 6; pointer-events: none; opacity: 0; overflow: visible; }
+#arrowPath { fill: none; stroke: var(--accent); stroke-width: 2.5; stroke-linecap: round; filter: drop-shadow(0 0 6px #000c); }
+#arrowTip { fill: #7cc4ff33; stroke: var(--accent); stroke-width: 2; }
+.panel h1 .big { display: block; font-size: 1.4em; font-weight: 700; line-height: 1.1; }
+/* Europa y España: algo más a la izquierda, más grandes y con más presencia */
+.panel.side.pop { left: 2vw; top: 36%; }
+.panel.bottom.pop h1,
+.panel.side.pop h1 { font-size: clamp(2.8rem, 6.4vw, 6rem); font-weight: 700; letter-spacing: .14em; color: #fff;
+  text-shadow: 0 2px 24px #000, 0 0 28px #7cc4ff66, 0 0 2px #000; }
+.photo.tall { width: min(26vw, 380px, calc((80vh - 4rem) * 0.8)); }
+.photo.tall img { aspect-ratio: 4 / 5; }
+/* etiqueta superior con el dato clave (人口密度 / 人均收入) */
+.stat { position: fixed; top: 1.6rem; left: 2rem; z-index: 7; opacity: 0; pointer-events: none;
+  transform: translateY(-10px); will-change: opacity, transform; text-align: left;
+  padding: .7rem 1.6rem .8rem; border-radius: 16px; background: #02030acc; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+  border: 1px solid #ffffff26; box-shadow: 0 10px 30px #0008; }
+.stat span { display: block; font-size: clamp(.8rem, 1.1vw, 1rem); letter-spacing: .2em; opacity: .8; }
+.stat b { display: block; margin-top: .15rem; font-size: clamp(1.6rem, 3vw, 2.6rem); font-weight: 700; letter-spacing: .04em; font-variant-numeric: tabular-nums; color: #fff; }
+/* final: mensaje de agradecimiento sobre la galaxia */
+.thanks { position: fixed; inset: 0; z-index: 7; display: grid; place-items: center; opacity: 0; pointer-events: none; }
+.thanks h1 { font-size: clamp(3rem, 10vw, 9rem); font-weight: 700; letter-spacing: .25em; padding-left: .25em; color: #fff;
+  text-shadow: 0 0 40px #7cc4ff99, 0 0 90px #7c5cff55, 0 4px 30px #000; will-change: transform; }
+#loader { position: fixed; inset: 0; background: #02030a; z-index: 20; display: grid; place-items: center; letter-spacing: .4em; font-size: .8rem; transition: opacity 1s; }
+
+/* móvil: sin índice de etapas; las fotos de la derecha ocupan el hueco que dejaba */
+@media (max-width: 768px) {
+  .dots { display: none; }
+  .photo.r { right: 1rem; }
+}
+
+/* fotos ampliables */
+.photo { cursor: zoom-in; transition: box-shadow .25s, border-color .25s; }
+.photo:hover { border-color: #7cc4ff80; box-shadow: 0 20px 60px #000a, 0 0 0 2px #7cc4ff55; }
+.photo:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
+
+/* visor a pantalla completa */
+.lightbox { position: fixed; inset: 0; z-index: 30; display: grid; place-items: center; padding: 3vh 3vw;
+  background: #02030ae6; backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+  opacity: 0; transition: opacity .3s ease; cursor: zoom-out; }
+.lightbox[hidden] { display: none; }
+.lightbox.open { opacity: 1; }
+.lightbox figure { margin: 0; display: flex; flex-direction: column; align-items: center; gap: 1rem;
+  transform: scale(.94); transition: transform .3s ease; }
+.lightbox.open figure { transform: scale(1); }
+.lightbox img { display: block; max-width: 94vw; max-height: 84vh; object-fit: contain; border-radius: 14px; box-shadow: 0 30px 80px #000c; }
+.lightbox figcaption h2 { font-size: clamp(1.3rem, 2.6vw, 2.2rem); font-weight: 600; text-align: center; color: #fff; text-shadow: 0 2px 16px #000; }
+.lb-close { all: unset; position: absolute; top: 1.2rem; right: 1.5rem; width: 2.8rem; height: 2.8rem; border-radius: 50%;
+  display: grid; place-items: center; font-size: 2rem; line-height: 1; color: #fff; cursor: pointer;
+  background: #ffffff1a; border: 1px solid #ffffff33; transition: background .2s; }
+.lb-close:hover { background: #ffffff33; }
+.lb-close:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+html.lb-lock, html.lb-lock body { overflow: hidden; }
+
+/* pinyin sobre los nombres de las fotos (名胜, 风景, 美食) */
+.photo h2 ruby, .lightbox h2 ruby { ruby-position: over; ruby-align: center; }
+.photo h2 rt, .lightbox h2 rt { font-family: "Segoe UI", system-ui, sans-serif; font-size: .42em; font-weight: 400; letter-spacing: .02em; opacity: .8; padding-bottom: .1em; }
+.photo figcaption { line-height: 1.5; }
