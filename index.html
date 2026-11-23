@@ -8,7 +8,7 @@
   :root { --accent: #7cc4ff; }
   * { margin: 0; padding: 0; box-sizing: border-box; }
   html { background: #02030a; }
-  body { font-family: "Segoe UI", system-ui, "Microsoft YaHei", "PingFang SC", "Noto Sans SC", sans-serif; color: #eaf2ff; height: 1700vh; }
+  body { font-family: "Segoe UI", system-ui, "Microsoft YaHei", "PingFang SC", "Noto Sans SC", sans-serif; color: #eaf2ff; height: 3700vh; }
   canvas { position: fixed; inset: 0; width: 100%; height: 100%; display: block; touch-action: pan-y; }
   canvas.grab { cursor: grab; }
   canvas.grabbing { cursor: grabbing; }
@@ -98,71 +98,138 @@
   #arrowPath { fill: none; stroke: var(--accent); stroke-width: 2.5; stroke-linecap: round; filter: drop-shadow(0 0 6px #000c); }
   #arrowTip { fill: #7cc4ff33; stroke: var(--accent); stroke-width: 2; }
   .panel h1 .big { display: block; font-size: 1.4em; font-weight: 700; line-height: 1.1; }
+  /* Europa y España: algo más a la izquierda, más grandes y con más presencia */
+  .panel.side.pop { left: 2vw; top: 36%; }
+  .panel.bottom.pop h1,
+  .panel.side.pop h1 { font-size: clamp(2.8rem, 6.4vw, 6rem); font-weight: 700; letter-spacing: .14em; color: #fff;
+    text-shadow: 0 2px 24px #000, 0 0 28px #7cc4ff66, 0 0 2px #000; }
+  .photo.tall { width: min(26vw, 380px, calc((80vh - 4rem) * 0.8)); }
+  .photo.tall img { aspect-ratio: 4 / 5; }
+  /* etiqueta superior con el dato clave (人口密度 / 人均收入) */
+  .stat { position: fixed; top: 1.6rem; left: 2rem; z-index: 7; opacity: 0; pointer-events: none;
+    transform: translateY(-10px); will-change: opacity, transform; text-align: left;
+    padding: .7rem 1.6rem .8rem; border-radius: 16px; background: #02030acc; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+    border: 1px solid #ffffff26; box-shadow: 0 10px 30px #0008; }
+  .stat span { display: block; font-size: clamp(.8rem, 1.1vw, 1rem); letter-spacing: .2em; opacity: .8; }
+  .stat b { display: block; margin-top: .15rem; font-size: clamp(1.6rem, 3vw, 2.6rem); font-weight: 700; letter-spacing: .04em; font-variant-numeric: tabular-nums; color: #fff; }
   #loader { position: fixed; inset: 0; background: #02030a; z-index: 20; display: grid; place-items: center; letter-spacing: .4em; font-size: .8rem; transition: opacity 1s; }
 </style>
 </head>
 <body>
-<div id="loader">CARGANDO</div>
+<div id="loader" lang="zh-Hans">加载中…</div>
 
 <section class="panel side active">
   <h1 lang="zh-Hans">我们美丽的<strong class="big">地球</strong></h1>
 </section>
-<section class="panel side">
-  <h1>Europa</h1>
+<section class="panel side pop">
+  <h1 lang="zh-Hans">欧洲</h1>
 </section>
-<section class="panel side">
-  <h1>España</h1>
+<section class="panel side pop">
+  <h1 lang="zh-Hans">西班牙</h1>
 </section>
-<section class="panel bottom">
-  <h1>Madrid</h1>
+<section class="panel bottom pop">
+  <h1 lang="zh-Hans">马德里</h1>
 </section>
 
 
-<div class="lbl" data-lat="42.75" data-lon="-7.9">Gallego</div>
-<div class="lbl" data-lat="43.0" data-lon="-2.65">Euskera</div>
-<div class="lbl" data-lat="41.75" data-lon="1.45">Catalán</div>
-<div class="lbl" data-lat="39.55" data-lon="2.95">Catalán</div>
-<div class="lbl" data-lat="39.4" data-lon="-0.6">Catalán / valenciano</div>
-<div class="lbl" data-lat="39.3" data-lon="-4.6">Español</div>
-<div class="legend" id="legend">
-  <header><h2>Idiomas de España</h2></header>
-  <div><i style="background:#4f9dff"></i>Gallego</div>
-  <div><i style="background:#2ca58d"></i>Euskera</div>
-  <div><i style="background:#e76f51"></i>Catalán</div>
-  <div><i style="background:#e9c46a"></i>Español</div>
+<div class="lbl" lang="zh-Hans" data-lat="42.75" data-lon="-7.9">加利西亚语</div>
+<div class="lbl" lang="zh-Hans" data-lat="43.0" data-lon="-2.65">巴斯克语</div>
+<div class="lbl" lang="zh-Hans" data-lat="41.75" data-lon="1.45">加泰罗尼亚语</div>
+<div class="lbl" lang="zh-Hans" data-lat="39.3" data-lon="-4.6">西班牙语</div>
+<div class="legend" id="legend" lang="zh-Hans">
+  <header><h2>西班牙的语言</h2></header>
+  <div><i style="background:#e9c46a"></i>西班牙语</div>
+  <div><i style="background:#e76f51"></i>加泰罗尼亚语（14%）</div>
+  <div><i style="background:#4f9dff"></i>加利西亚语（5%）</div>
+  <div><i style="background:#2ca58d"></i>巴斯克语（2%）</div>
 </div>
-<div class="legend" id="legend2">
-  <header><h2>Densidad de población</h2></header>
+<div class="legend" id="legend2" lang="zh-Hans">
+  <header><h2>人口密度</h2></header>
   <div class="ramp" id="ramp"></div>
-  <small id="srcNote">hab/km² · INE</small>
 </div>
-<div class="legend" id="legend3">
-  <header><h2>Renta por persona</h2></header>
+<div class="legend" id="legend3" lang="zh-Hans">
+  <header><h2>人均收入</h2></header>
   <div class="ramp" id="ramp3"></div>
-  <small id="srcNote3">€ al año · INE</small>
 </div>
 <div class="city" id="cityBcn" data-lat="41.4036" data-lon="2.1744"><b></b><span>Barcelona</span></div>
 <div class="city left" id="cityGra" data-lat="37.1761" data-lon="-3.5881"><b></b><span>Granada</span></div>
 <svg id="leader" aria-hidden="true"><line id="leaderLine" x1="0" y1="0" x2="0" y2="0"/><circle id="leaderDot" r="3" cx="0" cy="0"/></svg>
 <figure class="photo l" id="photoBcn">
   <img src="sagrada_familia.webp" alt="Basílica de la Sagrada Familia sobre los tejados de Barcelona al atardecer">
-  <figcaption><h2>Sagrada Familia</h2></figcaption>
+  <figcaption><h2>Sagrada Familia <span lang="zh-Hans">（圣家堂）</span></h2></figcaption>
 </figure>
 <figure class="photo r" id="photoGra">
   <img src="alhambra.jpg" alt="La Alhambra de Granada con Sierra Nevada nevada al fondo">
-  <figcaption><h2>La Alhambra</h2></figcaption>
+  <figcaption><h2>La Alhambra <span lang="zh-Hans">（阿尔罕布拉宫）</span></h2></figcaption>
 </figure>
 <svg id="arrow" aria-hidden="true">
   <defs><marker id="arrowHead" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#7cc4ff"/></marker></defs>
   <path id="arrowPath" d="M0,0" marker-end="url(#arrowHead)"/>
   <circle id="arrowTip" r="7" cx="-99" cy="-99"/>
 </svg>
-<div class="pin" id="pin">Madrid</div>
-<div class="hint" id="hint"><span>Desliza</span><i></i></div>
+<div class="city left" id="cityAst" data-lat="43.3" data-lon="-5.9"><b></b><span>Asturias</span></div>
+<figure class="photo r" id="photoAst">
+  <img src="asturias.avif" alt="Paisaje de Asturias" decoding="async">
+  <figcaption><h2 lang="zh-Hans">阿斯图里亚斯</h2></figcaption>
+</figure>
+<div class="city" id="cityGip" data-lat="43.3" data-lon="-2.26"><b></b><span>Gipuzkoa</span></div>
+<figure class="photo l tall" id="photoGip">
+  <img src="guipuzkua.webp" alt="Acantilados de flysch de Zumaia, en Gipuzkoa, vistos desde el aire" decoding="async">
+  <figcaption><h2 lang="zh-Hans">吉普斯夸</h2></figcaption>
+</figure>
+<div class="city left" id="cityNav" data-lat="42.98" data-lon="-1.09"><b></b><span>Navarra</span></div>
+<figure class="photo r" id="photoNav">
+  <img src="navarra.jpg" alt="Hayedo de la selva de Irati, en Navarra, con colores de otoño" decoding="async">
+  <figcaption><h2 lang="zh-Hans">纳瓦拉</h2></figcaption>
+</figure>
+<div class="city" id="cityVie" data-lat="42.7" data-lon="0.8"><b></b><span>Vielha</span></div>
+<figure class="photo l" id="photoVie">
+  <img src="vielha.jpg" alt="Val d’Aran nevado con casas de montaña y los Pirineos al fondo" decoding="async">
+  <figcaption><h2 lang="zh-Hans">维耶拉</h2></figcaption>
+</figure>
+<div class="city left" id="cityLle" data-lat="42.08" data-lon="0.69"><b></b><span>Lleida</span></div>
+<figure class="photo r tall" id="photoLle">
+  <img src="lleida.jpeg" alt="Congosto de Mont-rebei, en Lleida, con agua turquesa entre paredes de roca" decoding="async">
+  <figcaption><h2 lang="zh-Hans">莱里达</h2></figcaption>
+</figure>
+<div class="city" id="cityMen" data-lat="39.94" data-lon="3.94"><b></b><span>Menorca</span></div>
+<figure class="photo l" id="photoMen">
+  <img src="menorca.jpg" alt="Cala de aguas turquesa rodeada de pinos en Menorca, vista desde el aire" decoding="async">
+  <figcaption><h2 lang="zh-Hans">梅诺卡岛</h2></figcaption>
+</figure>
+<div class="city left" id="cityAlm" data-lat="37.05" data-lon="-2.39"><b></b><span>Almería</span></div>
+<figure class="photo r" id="photoAlm">
+  <img src="almeria.webp" alt="Desierto de Tabernas, en Almería, bajo un cielo azul" decoding="async">
+  <figcaption><h2 lang="zh-Hans">阿尔梅里亚</h2></figcaption>
+</figure>
+<div class="city" id="citySev" data-lat="37.384" data-lon="-5.991"><b></b><span>Sevilla</span></div>
+<figure class="photo l" id="photoSev">
+  <img src="sevilla.jpg" alt="Patio de las Doncellas del Real Alcázar de Sevilla" decoding="async">
+  <figcaption><h2 lang="zh-Hans">塞维利亚</h2></figcaption>
+</figure>
+<div class="city left" id="cityJam" data-lat="39.2" data-lon="-6.15"><b></b><span>Extremadura</span></div>
+<figure class="photo r" id="photoJam">
+  <img src="jamon_extremedura.webp" alt="Jamón ibérico cortado a cuchillo en su soporte, con un plato de lonchas" decoding="async">
+  <figcaption><h2 lang="zh-Hans">火腿</h2></figcaption>
+</figure>
+<div class="city" id="cityVin" data-lat="42.47" data-lon="-2.45"><b></b><span>La Rioja</span></div>
+<figure class="photo l" id="photoVin">
+  <img src="vino_rioja.jpg" alt="Vino tinto sirviéndose en una copa, con barricas de roble al fondo" decoding="async">
+  <figcaption><h2 lang="zh-Hans">红葡萄酒</h2></figcaption>
+</figure>
+<div class="city left" id="cityPae" data-lat="39.47" data-lon="-0.376"><b></b><span>Valencia</span></div>
+<figure class="photo r tall" id="photoPae">
+  <img src="paella_valencia.jpg" alt="Paella de marisco con gambas, mejillones y almejas en una paellera" decoding="async">
+  <figcaption><h2 lang="zh-Hans">西班牙海鲜饭</h2></figcaption>
+</figure>
+<div class="stat" id="statPop" lang="zh-Hans"><span>西班牙总人口</span><b id="statPopVal">—</b></div>
+<div class="stat" id="statInc" lang="zh-Hans"><span>人均年收入</span><b>15,948 欧元</b></div>
+<div class="pin" id="pin" lang="zh-Hans">马德里</div>
+<div class="hint" id="hint" lang="zh-Hans"><span>向下滑动</span><i></i></div>
 <div class="dots" id="dots" role="navigation" aria-label="Etapas">
-  <button data-i="0">Espacio</button><button data-i="1">Europa</button><button data-i="2">España</button><button data-i="3">Madrid</button><button data-i="4" data-to="5">Lugares</button><button data-i="6">Idiomas</button><button data-i="7">Densidad</button><button data-i="8">Renta</button>
+  <button data-i="0" lang="zh-Hans">地球</button><button data-i="1" lang="zh-Hans">欧洲</button><button data-i="2" lang="zh-Hans">西班牙</button><button data-i="3" lang="zh-Hans">马德里</button><button data-i="4" data-to="5" lang="zh-Hans">名胜</button><button data-i="6" data-to="13" lang="zh-Hans">风景</button><button data-i="14" data-to="16" lang="zh-Hans">美食</button><button data-i="17" lang="zh-Hans">语言</button><button data-i="18" lang="zh-Hans">人口密度</button><button data-i="19" lang="zh-Hans">人均收入</button>
 </div>
-<div class="alt">ALTITUD <span id="alt">—</span> km</div>
+<div class="alt" lang="zh-Hans">高度 <span id="alt">—</span> 公里</div>
 
 <script src="poblacion.js"></script>
 <script src="municipios.js"></script>
@@ -551,12 +618,11 @@ const DENS = [
   { max: 50,       color: '#fdb47c', label: '25 – 50' },
   { max: 100,      color: '#f8805f', label: '50 – 100' },
   { max: 500,      color: '#e3505c', label: '100 – 500' },
-  { max: 1000,     color: '#b5367a', label: '500 – 1.000' },
-  { max: 5000,     color: '#7c2382', label: '1.000 – 5.000' },
-  { max: Infinity, color: '#3b0f70', label: '> 5.000' },
+  { max: 1000,     color: '#b5367a', label: '500 – 1,000' },
+  { max: 5000,     color: '#7c2382', label: '1,000 – 5,000' },
+  { max: Infinity, color: '#3b0f70', label: '> 5,000' },
 ];
 document.getElementById('ramp').innerHTML = DENS.map(d => `<div><i style="background:${d.color}"></i>${d.label}</div>`).join('');
-if (window.POBLACION_YEAR) document.getElementById('srcNote').textContent = `hab/km² · INE ${window.POBLACION_YEAR}`;
 
 let densMat = null;
 async function buildDensityMap() {
@@ -630,17 +696,16 @@ buildDensityMap().catch(err => console.warn('No se pudo cargar el mapa de densid
 
 // Mapa de renta por persona por municipio
 const RENTA_SCALE = [
-  { max: 10000,    color: '#d73027', label: '< 10.000 €' },
-  { max: 12000,    color: '#f46d43', label: '10.000 – 12.000 €' },
-  { max: 14000,    color: '#fdae61', label: '12.000 – 14.000 €' },
-  { max: 16000,    color: '#fee08b', label: '14.000 – 16.000 €' },
-  { max: 18000,    color: '#d9ef8b', label: '16.000 – 18.000 €' },
-  { max: 20000,    color: '#a6d96a', label: '18.000 – 20.000 €' },
-  { max: 24000,    color: '#66bd63', label: '20.000 – 24.000 €' },
-  { max: Infinity, color: '#1a9850', label: '> 24.000 €' },
+  { max: 10000,    color: '#d73027', label: '< 10,000' },
+  { max: 12000,    color: '#f46d43', label: '10,000 – 12,000' },
+  { max: 14000,    color: '#fdae61', label: '12,000 – 14,000' },
+  { max: 16000,    color: '#fee08b', label: '14,000 – 16,000' },
+  { max: 18000,    color: '#d9ef8b', label: '16,000 – 18,000' },
+  { max: 20000,    color: '#a6d96a', label: '18,000 – 20,000' },
+  { max: 24000,    color: '#66bd63', label: '20,000 – 24,000' },
+  { max: Infinity, color: '#1a9850', label: '> 24,000' },
 ];
 document.getElementById('ramp3').innerHTML = RENTA_SCALE.map(d => `<div><i style="background:${d.color}"></i>${d.label}</div>`).join('');
-if (window.RENTA_YEAR) document.getElementById('srcNote3').textContent = `€ al año · INE ${window.RENTA_YEAR}`;
 
 let rentaMat = null;
 async function buildRentaMap() {
@@ -740,15 +805,43 @@ const stages = [
 // Lugares: Barcelona (a la derecha, foto a la izquierda) y Granada (a la izquierda, foto a la derecha)
 stages.push({ dist: 1.3, fov: 28, tilt: 0.08, q: quatFor(40.6, -3.2) });  // 4 Barcelona
 stages.push({ dist: 1.3, fov: 28, tilt: 0.08, q: quatFor(38.3, 0.2) });   // 5 Granada
-stages.push(MAP_VIEW); // 6 mapa de idiomas
-stages.push(MAP_VIEW); // 7 densidad de población
-stages.push(MAP_VIEW); // 8 renta por persona
+stages.push({ dist: 1.3, fov: 28, tilt: 0.08, q: quatFor(43.00, -3.30) }); // 6 Paisaje: Asturias
+stages.push({ dist: 1.3, fov: 28, tilt: 0.08, q: quatFor(43.00, -4.86) }); // 7 Paisaje: Gipuzkoa
+stages.push({ dist: 1.3, fov: 28, tilt: 0.08, q: quatFor(42.68, 1.51) }); // 8 Paisaje: Navarra
+stages.push({ dist: 1.3, fov: 28, tilt: 0.08, q: quatFor(42.40, -1.80) }); // 9 Paisaje: Vielha
+stages.push({ dist: 1.3, fov: 28, tilt: 0.08, q: quatFor(41.78, 3.29) }); // 10 Paisaje: Lleida
+stages.push({ dist: 1.3, fov: 28, tilt: 0.08, q: quatFor(39.64, 1.34) }); // 11 Paisaje: Menorca
+stages.push({ dist: 1.3, fov: 28, tilt: 0.08, q: quatFor(36.75, 0.21) }); // 12 Paisaje: Almería
+stages.push({ dist: 1.3, fov: 28, tilt: 0.08, q: quatFor(37.08, -8.59) }); // 13 Paisaje: Sevilla
+stages.push({ dist: 1.3, fov: 28, tilt: 0.08, q: quatFor(38.90, -3.55) }); // 14 Gastronomía: Extremadura
+stages.push({ dist: 1.3, fov: 28, tilt: 0.08, q: quatFor(42.17, -5.05) }); // 15 Gastronomía: La Rioja
+stages.push({ dist: 1.3, fov: 28, tilt: 0.08, q: quatFor(39.17, 2.22) }); // 16 Gastronomía: Valencia
+stages.push(MAP_VIEW); // 17 mapa de idiomas
+stages.push(MAP_VIEW); // 18 densidad de población
+stages.push(MAP_VIEW); // 19 renta por persona
 const LAST = stages.length - 1;
 const legend2 = document.getElementById('legend2');
+const statPop = document.getElementById('statPop'), statInc = document.getElementById('statInc');
+// renta media nacional: INE, Atlas de Distribución de Renta de los Hogares 2024 (15.948 € por persona)
+if (window.POBLACION) {
+  const totalPop = Object.values(window.POBLACION).reduce((a, b) => a + b, 0);
+  document.getElementById('statPopVal').textContent = totalPop.toLocaleString('zh-CN') + ' 人';
+}
 const legend3 = document.getElementById('legend3');
 const cities = [
   { el: document.getElementById('cityBcn'), photo: document.getElementById('photoBcn'), k: 4, side: 'l' },
   { el: document.getElementById('cityGra'), photo: document.getElementById('photoGra'), k: 5, side: 'r' },
+  { el: document.getElementById('cityAst'), photo: document.getElementById('photoAst'), k: 6, side: 'r' },
+  { el: document.getElementById('cityGip'), photo: document.getElementById('photoGip'), k: 7, side: 'l' },
+  { el: document.getElementById('cityNav'), photo: document.getElementById('photoNav'), k: 8, side: 'r' },
+  { el: document.getElementById('cityVie'), photo: document.getElementById('photoVie'), k: 9, side: 'l' },
+  { el: document.getElementById('cityLle'), photo: document.getElementById('photoLle'), k: 10, side: 'r' },
+  { el: document.getElementById('cityMen'), photo: document.getElementById('photoMen'), k: 11, side: 'l' },
+  { el: document.getElementById('cityAlm'), photo: document.getElementById('photoAlm'), k: 12, side: 'r' },
+  { el: document.getElementById('citySev'), photo: document.getElementById('photoSev'), k: 13, side: 'l' },
+  { el: document.getElementById('cityJam'), photo: document.getElementById('photoJam'), k: 14, side: 'r' },
+  { el: document.getElementById('cityVin'), photo: document.getElementById('photoVin'), k: 15, side: 'l' },
+  { el: document.getElementById('cityPae'), photo: document.getElementById('photoPae'), k: 16, side: 'r' },
 ].map(c => ({ ...c, v: latLonToVec(+c.el.dataset.lat, +c.el.dataset.lon).multiplyScalar(1.002) }));
 const leaderSvg = document.getElementById('leader');
 const leaderLine = document.getElementById('leaderLine');
@@ -831,12 +924,12 @@ function frame() {
   // marcador de Madrid: aparece en la última etapa
   // transición imagen real -> mapa pintado
   const mapsOn = 1; // Renta es la última etapa: los mapas pintados se quedan
-  const mapA = smoother((s - 5.15) / 0.6) * mapsOn;
+  const mapA = smoother((s - 16.15) / 0.6) * mapsOn;
   if (mapMat) mapMat.opacity = mapA;
   if (globeMat) globeMat.opacity = mapA;
-  const densA = smoother((s - 6.15) / 0.6);
+  const densA = smoother((s - 17.15) / 0.6);
   if (densMat) densMat.opacity = densA * mapsOn;
-  const rentaA = smoother((s - 7.15) / 0.6);
+  const rentaA = smoother((s - 18.15) / 0.6);
   if (rentaMat) rentaMat.opacity = rentaA * mapsOn;
   const pa = smoother(s - 2.15) * (1 - smoother((s - 3.05) / 0.35)); // se oculta al pasar a Lugares
   const pulse = (t * 0.8) % 1;
@@ -849,15 +942,19 @@ function frame() {
   pinEl.style.transform = `translate(${(tmp.x * 0.5 + 0.5) * innerWidth + 18}px, ${(-tmp.y * 0.5 + 0.5) * innerHeight - 10}px)`;
 
   // etiquetas de idiomas
-  const la = smoother((s - 5.65) / 0.3) * (1 - smoother((s - 6.05) / 0.3));
+  const la = smoother((s - 16.65) / 0.3) * (1 - smoother((s - 17.05) / 0.3));
   for (const l of lbls) {
     tmp.copy(l.v).applyMatrix4(earth.matrixWorld).project(camera);
     l.el.style.opacity = la;
     l.el.style.transform = `translate(${(tmp.x * 0.5 + 0.5) * innerWidth}px, ${(-tmp.y * 0.5 + 0.5) * innerHeight}px) translate(-50%, -50%)`;
   }
   legend.style.opacity = la;
-  legend2.style.opacity = smoother((s - 6.6) / 0.3) * (1 - smoother((s - 7.05) / 0.3));
-  legend3.style.opacity = smoother((s - 7.6) / 0.3);
+  legend2.style.opacity = smoother((s - 17.6) / 0.3) * (1 - smoother((s - 18.05) / 0.3));
+  legend3.style.opacity = smoother((s - 18.6) / 0.3);
+  const popA = smoother((s - 17.6) / 0.3) * (1 - smoother((s - 18.05) / 0.3));
+  const incA = smoother((s - 18.6) / 0.3);
+  statPop.style.opacity = popA; statPop.style.transform = `translateY(${(1 - popA) * -10}px)`;
+  statInc.style.opacity = incA; statInc.style.transform = `translateY(${(1 - incA) * -10}px)`;
 
   // ciudades con monumento
   let leaderA = 0;
@@ -922,7 +1019,7 @@ function frame() {
   }
 
   // UI
-  altEl.textContent = Math.round((dist - R) * 6371).toLocaleString('es-ES');
+  altEl.textContent = Math.round((dist - R) * 6371).toLocaleString('zh-CN');
   hint.style.opacity = progress < 0.02 ? 0.7 : 0;
   panels.forEach((p, k) => p.classList.toggle('active', Math.abs(s - k) < 0.3));
   dots.forEach(d => { const a = +d.dataset.i, b = +(d.dataset.to ?? a); d.classList.toggle('on', s >= a - 0.5 && s < b + 0.5); });
