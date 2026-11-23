@@ -3,20 +3,15 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>De la Tierra a Madrid</title>
+<title>España</title>
 <style>
   :root { --accent: #7cc4ff; }
   * { margin: 0; padding: 0; box-sizing: border-box; }
   html { background: #02030a; }
-  body { font-family: "Segoe UI", system-ui, sans-serif; color: #eaf2ff; height: 1300vh; }
-  canvas { position: fixed; inset: 0; width: 100%; height: 100%; display: block; }
-  nav {
-    position: fixed; top: 0; left: 0; right: 0; z-index: 10;
-    display: flex; justify-content: space-between; align-items: center;
-    padding: 1.2rem 2rem; background: linear-gradient(#02030acc, transparent);
-  }
-  nav .logo { font-weight: 700; letter-spacing: .25em; font-size: .9rem; }
-  nav span { font-size: .8rem; opacity: .6; letter-spacing: .15em; }
+  body { font-family: "Segoe UI", system-ui, "Microsoft YaHei", "PingFang SC", "Noto Sans SC", sans-serif; color: #eaf2ff; height: 1700vh; }
+  canvas { position: fixed; inset: 0; width: 100%; height: 100%; display: block; touch-action: pan-y; }
+  canvas.grab { cursor: grab; }
+  canvas.grabbing { cursor: grabbing; }
   .panel {
     position: fixed; left: 50%; top: 50%; z-index: 5;
     transform: translate(-50%, -46%); text-align: center; width: min(90vw, 760px);
@@ -65,7 +60,7 @@
   .pin::before { content: ""; display: inline-block; width: 12px; height: 12px; margin-right: .8rem; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 5px #7cc4ff55, 0 0 24px var(--accent); }
   .lbl { position: fixed; z-index: 4; left: 0; top: 0; pointer-events: none; opacity: 0; font-weight: 700; font-size: clamp(.8rem, 1.6vw, 1.15rem); letter-spacing: .12em; text-transform: uppercase; color: #fff; text-shadow: 0 1px 3px #000c, 0 0 14px #0009; transform: translate(-50%, -50%); will-change: transform, opacity; white-space: nowrap; }
   .legend { position: fixed; left: 2rem; top: 50%; transform: translateY(-50%); z-index: 6; opacity: 0; pointer-events: none; background: #02030a99; backdrop-filter: blur(10px); border: 1px solid #ffffff22; border-radius: 14px; padding: 1.2rem 1.4rem; display: grid; gap: .9rem; }
-  .legend header { margin-bottom: .3rem; padding-bottom: .9rem; border-bottom: 1px solid #ffffff22; }
+  .legend header { margin-bottom: .2rem; }
   .legend header span { display: block; font-size: .7rem; letter-spacing: .35em; text-transform: uppercase; color: var(--accent); margin-bottom: .5rem; }
   .legend h2 { font-size: clamp(1.4rem, 2.6vw, 2.1rem); font-weight: 300; letter-spacing: .04em; line-height: 1.15; max-width: 230px; }
   .legend div { display: flex; align-items: center; gap: .8rem; font-size: 1rem; letter-spacing: .08em; }
@@ -74,32 +69,52 @@
   .legend .ramp { display: grid; gap: .35rem; }
   .legend .ramp div { gap: .7rem; font-size: .85rem; font-variant-numeric: tabular-nums; }
   .legend .ramp i { width: 26px; height: 14px; border-radius: 3px; }
+  /* ciudades y monumentos */
+  .city { position: fixed; z-index: 4; left: 0; top: 0; pointer-events: none; opacity: 0; will-change: transform, opacity;
+    font-size: .95rem; font-weight: 600; letter-spacing: .3em; text-transform: uppercase; white-space: nowrap; text-shadow: 0 1px 10px #000, 0 0 4px #000; }
+  .city b { position: absolute; left: -7px; top: -7px; width: 14px; height: 14px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 4px #7cc4ff55, 0 0 22px var(--accent); }
+  .city b::after { content: ""; position: absolute; inset: -4px; border-radius: 50%; border: 2px solid var(--accent); animation: ping 1.8s ease-out infinite; }
+  .city span { position: absolute; left: 18px; top: -.7em; }
+  .city.left span { left: auto; right: 18px; }
+  @keyframes ping { from { transform: scale(1); opacity: .9; } to { transform: scale(3.2); opacity: 0; } }
+  .photo { position: fixed; z-index: 7; top: 50%; width: min(34vw, 480px); margin: 0; opacity: 0; pointer-events: none;
+    transform: translateY(-50%); background: #02030acc; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+    border: 1px solid #ffffff26; border-radius: 18px; overflow: hidden; box-shadow: 0 20px 60px #000a; will-change: opacity, transform; }
+  .photo.l { left: 2rem; }
+  .photo.r { right: 14rem; }
+  .photo img { display: block; width: 100%; aspect-ratio: 3 / 2; object-fit: cover; }
+  .photo figcaption { padding: 1rem 1.3rem 1.2rem; }
+  .photo figcaption span { display: block; font-size: .7rem; letter-spacing: .35em; text-transform: uppercase; color: var(--accent); margin-bottom: .4rem; }
+  .photo h2 { font-size: clamp(1.4rem, 2.4vw, 2rem); font-weight: 300; letter-spacing: .03em; }
+  .photo p { margin-top: .4rem; font-size: .9rem; line-height: 1.5; opacity: .8; }
+  #leader { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 6; pointer-events: none; }
+  #leader line { stroke: var(--accent); stroke-width: 1.5; stroke-dasharray: 4 5; filter: drop-shadow(0 0 4px #000); }
+  #leader circle { fill: var(--accent); }
+  /* títulos laterales señalados con flecha (Tierra, Europa, España) */
+  .panel.side { left: 6vw; top: 50%; width: min(34vw, 440px); text-align: left; transform: translate(0, -46%); }
+  .panel.side.active { transform: translate(0, -50%); }
+  .panel.side h1 { display: inline-block; font-size: clamp(2rem, 4.6vw, 4.2rem); line-height: 1.05; }
+  #arrow { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 6; pointer-events: none; opacity: 0; overflow: visible; }
+  #arrowPath { fill: none; stroke: var(--accent); stroke-width: 2.5; stroke-linecap: round; filter: drop-shadow(0 0 6px #000c); }
+  #arrowTip { fill: #7cc4ff33; stroke: var(--accent); stroke-width: 2; }
+  .panel h1 .big { display: block; font-size: 1.4em; font-weight: 700; line-height: 1.1; }
   #loader { position: fixed; inset: 0; background: #02030a; z-index: 20; display: grid; place-items: center; letter-spacing: .4em; font-size: .8rem; transition: opacity 1s; }
 </style>
 </head>
 <body>
 <div id="loader">CARGANDO</div>
-<nav><div class="logo">ORBITA</div><span>DE LA TIERRA A MADRID</span></nav>
 
-<section class="panel active">
-  <small>01 · Espacio</small>
-  <h1>Planeta Tierra</h1>
-  <p>Vista desde el espacio. Desliza o pulsa ↓ para acercarte.</p>
+<section class="panel side active">
+  <h1 lang="zh-Hans">我们美丽的<strong class="big">地球</strong></h1>
 </section>
-<section class="panel top">
-  <small>02 · Continente</small>
+<section class="panel side">
   <h1>Europa</h1>
-  <p>Nos acercamos al extremo suroeste del continente.</p>
 </section>
-<section class="panel bottom">
-  <small>03 · País</small>
+<section class="panel side">
   <h1>España</h1>
-  <p>Una península entre el Mediterráneo y el Atlántico.</p>
 </section>
 <section class="panel bottom">
-  <small>04 · Capital</small>
   <h1>Madrid</h1>
-  <p>40.4168° N, 3.7038° O</p>
 </section>
 
 
@@ -110,27 +125,42 @@
 <div class="lbl" data-lat="39.4" data-lon="-0.6">Catalán / valenciano</div>
 <div class="lbl" data-lat="39.3" data-lon="-4.6">Español</div>
 <div class="legend" id="legend">
-  <header><span>05 · Lenguas</span><h2>Idiomas de España</h2></header>
+  <header><h2>Idiomas de España</h2></header>
   <div><i style="background:#4f9dff"></i>Gallego</div>
   <div><i style="background:#2ca58d"></i>Euskera</div>
   <div><i style="background:#e76f51"></i>Catalán</div>
   <div><i style="background:#e9c46a"></i>Español</div>
-  <small>Mapa simplificado por comunidades autónomas. Navarra: zona vascófona al norte.</small>
 </div>
 <div class="legend" id="legend2">
-  <header><span>06 · Población</span><h2>Densidad de población</h2></header>
+  <header><h2>Densidad de población</h2></header>
   <div class="ramp" id="ramp"></div>
-  <small id="srcNote">Habitantes por km² en cada municipio. Fuente: INE, Padrón municipal.</small>
+  <small id="srcNote">hab/km² · INE</small>
 </div>
 <div class="legend" id="legend3">
-  <header><span>07 · Economía</span><h2>Renta por persona</h2></header>
+  <header><h2>Renta por persona</h2></header>
   <div class="ramp" id="ramp3"></div>
-  <small id="srcNote3">Renta neta media anual por persona en cada municipio (€). Fuente: INE, Atlas de Distribución de Renta de los Hogares.</small>
+  <small id="srcNote3">€ al año · INE</small>
 </div>
+<div class="city" id="cityBcn" data-lat="41.4036" data-lon="2.1744"><b></b><span>Barcelona</span></div>
+<div class="city left" id="cityGra" data-lat="37.1761" data-lon="-3.5881"><b></b><span>Granada</span></div>
+<svg id="leader" aria-hidden="true"><line id="leaderLine" x1="0" y1="0" x2="0" y2="0"/><circle id="leaderDot" r="3" cx="0" cy="0"/></svg>
+<figure class="photo l" id="photoBcn">
+  <img src="sagrada_familia.webp" alt="Basílica de la Sagrada Familia sobre los tejados de Barcelona al atardecer">
+  <figcaption><h2>Sagrada Familia</h2></figcaption>
+</figure>
+<figure class="photo r" id="photoGra">
+  <img src="alhambra.jpg" alt="La Alhambra de Granada con Sierra Nevada nevada al fondo">
+  <figcaption><h2>La Alhambra</h2></figcaption>
+</figure>
+<svg id="arrow" aria-hidden="true">
+  <defs><marker id="arrowHead" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#7cc4ff"/></marker></defs>
+  <path id="arrowPath" d="M0,0" marker-end="url(#arrowHead)"/>
+  <circle id="arrowTip" r="7" cx="-99" cy="-99"/>
+</svg>
 <div class="pin" id="pin">Madrid</div>
 <div class="hint" id="hint"><span>Desliza</span><i></i></div>
 <div class="dots" id="dots" role="navigation" aria-label="Etapas">
-  <button data-i="0">Espacio</button><button data-i="1">Europa</button><button data-i="2">España</button><button data-i="3">Madrid</button><button data-i="4">Idiomas</button><button data-i="5">Densidad</button><button data-i="6">Renta</button>
+  <button data-i="0">Espacio</button><button data-i="1">Europa</button><button data-i="2">España</button><button data-i="3">Madrid</button><button data-i="4" data-to="5">Lugares</button><button data-i="6">Idiomas</button><button data-i="7">Densidad</button><button data-i="8">Renta</button>
 </div>
 <div class="alt">ALTITUD <span id="alt">—</span> km</div>
 
@@ -148,6 +178,37 @@ renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
 renderer.setSize(innerWidth, innerHeight);
 renderer.outputColorSpace = THREE.SRGBColorSpace;
 document.body.prepend(renderer.domElement);
+
+// Arrastre horizontal para girar el planeta en la etapa Espacio (el norte se mantiene arriba)
+const userQ = new THREE.Quaternion(), dragQ = new THREE.Quaternion();
+const AX_X = new THREE.Vector3(1, 0, 0), AX_Y = new THREE.Vector3(0, 1, 0);
+let velX = 0, velY = 0, dragging = false, dragX = 0, dragY = 0, dragEnabled = true;
+const cv = renderer.domElement;
+const rotateBy = (ax, ay) => {
+  // giro en ejes de pantalla: horizontal alrededor de Y, vertical alrededor de X
+  userQ.premultiply(dragQ.setFromAxisAngle(AX_Y, ax)).premultiply(dragQ.setFromAxisAngle(AX_X, ay)).normalize();
+};
+cv.addEventListener('pointerdown', e => {
+  if (!dragEnabled || e.button > 0) return;
+  dragging = true; dragX = e.clientX; dragY = e.clientY; velX = velY = 0;
+  cv.setPointerCapture(e.pointerId);
+  cv.classList.add('grabbing');
+});
+cv.addEventListener('pointermove', e => {
+  if (!dragging) return;
+  const ax = (e.clientX - dragX) * 0.006;
+  const ay = 0; // solo giro horizontal
+  dragX = e.clientX; dragY = e.clientY;
+  rotateBy(ax, ay); velX = ax; velY = ay;
+});
+const endDrag = e => {
+  if (!dragging) return;
+  dragging = false;
+  cv.classList.remove('grabbing');
+  if (cv.hasPointerCapture(e.pointerId)) cv.releasePointerCapture(e.pointerId);
+};
+cv.addEventListener('pointerup', endDrag);
+cv.addEventListener('pointercancel', endDrag);
 
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(45, innerWidth / innerHeight, 0.002, 200);
@@ -193,16 +254,146 @@ const sun = new THREE.DirectionalLight(0xffffff, 2.6);
 sun.position.set(-3, 1.5, 5);
 scene.add(sun);
 
-// Estrellas
-const NS = 3500, spos = new Float32Array(NS * 3);
-for (let i = 0; i < NS; i++) {
-  const v = new THREE.Vector3().randomDirection().multiplyScalar(60 + Math.random() * 60);
-  spos.set([v.x, v.y, v.z], i * 3);
-}
-const sg = new THREE.BufferGeometry();
-sg.setAttribute('position', new THREE.BufferAttribute(spos, 3));
-const stars = new THREE.Points(sg, new THREE.PointsMaterial({ size: 0.28, color: 0xffffff, transparent: true, opacity: 0.85 }));
+// ---------- Cielo estrellado ----------
+// Estrellas con tamaño, color (temperatura) y centelleo propios, una banda tipo Vía Láctea y nebulosas tenues.
+const stars = new THREE.Group();
 scene.add(stars);
+const gauss = () => Math.sqrt(-2 * Math.log(1 - Math.random())) * Math.cos(2 * Math.PI * Math.random());
+const STAR_TINTS = [[0.70, 0.80, 1.00], [0.85, 0.90, 1.00], [1, 1, 1], [1, 0.96, 0.88], [1, 0.86, 0.70], [1, 0.75, 0.60]];
+const STAR_W = [0.12, 0.22, 0.30, 0.20, 0.11, 0.05];
+const pickTint = () => { let r = Math.random(); for (let i = 0; i < STAR_W.length; i++) { if ((r -= STAR_W[i]) <= 0) return STAR_TINTS[i]; } return STAR_TINTS[2]; };
+
+const N_FIELD = 5000, N_BAND = 5000, N_ALL = N_FIELD + N_BAND;
+const sPos = new Float32Array(N_ALL * 3), sCol = new Float32Array(N_ALL * 3), sSize = new Float32Array(N_ALL), sPhase = new Float32Array(N_ALL);
+// plano de la banda galáctica, inclinado respecto al ecuador
+const bandN = new THREE.Vector3(0.35, 0.82, -0.45).normalize();
+const bandU = new THREE.Vector3(1, 0, 0).cross(bandN).normalize();
+const bandW = bandN.clone().cross(bandU).normalize();
+const tv = new THREE.Vector3();
+for (let i = 0; i < N_ALL; i++) {
+  const inBand = i >= N_FIELD;
+  if (inBand) {
+    const th = Math.random() * Math.PI * 2;
+    const spread = 0.07 + 0.06 * (0.5 + 0.5 * Math.sin(th * 3.0)); // la banda se ensancha y estrecha
+    tv.copy(bandU).multiplyScalar(Math.cos(th)).addScaledVector(bandW, Math.sin(th)).addScaledVector(bandN, gauss() * spread).normalize();
+  } else tv.randomDirection();
+  tv.multiplyScalar(70 + Math.random() * 50);
+  sPos.set([tv.x, tv.y, tv.z], i * 3);
+  const tint = pickTint();
+  const bright = inBand ? 0.22 + Math.random() * 0.28 : 0.4 + Math.random() * 0.5; // la intensidad va en el color, no en el tamaño
+  sCol.set([tint[0] * bright, tint[1] * bright, tint[2] * bright], i * 3);
+  // pocas estrellas grandes, muchas pequeñas
+  sSize[i] = inBand ? 2.4 : 2.6 + Math.pow(Math.random(), 6) * 4.0;
+  sPhase[i] = Math.random();
+}
+const starGeo = new THREE.BufferGeometry();
+starGeo.setAttribute('position', new THREE.BufferAttribute(sPos, 3));
+starGeo.setAttribute('aColor', new THREE.BufferAttribute(sCol, 3));
+starGeo.setAttribute('aSize', new THREE.BufferAttribute(sSize, 1));
+starGeo.setAttribute('aPhase', new THREE.BufferAttribute(sPhase, 1));
+const starMat = new THREE.ShaderMaterial({
+  transparent: true, depthWrite: false, blending: THREE.AdditiveBlending,
+  uniforms: { uTime: { value: 0 }, uPR: { value: renderer.getPixelRatio() }, uOpacity: { value: 1 } },
+  vertexShader: `
+    attribute vec3 aColor; attribute float aSize; attribute float aPhase;
+    uniform float uTime; uniform float uPR;
+    varying vec3 vColor; varying float vTw;
+    void main() {
+      vTw = 1.0; // brillo constante, sin centelleo
+      vColor = aColor;
+      gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+      gl_PointSize = aSize * uPR;
+    }`,
+  fragmentShader: `
+    uniform float uOpacity;
+    varying vec3 vColor; varying float vTw;
+    void main() {
+      float d = length(gl_PointCoord - 0.5);
+      float a = smoothstep(0.5, 0.05, d); // perfil suave: estable aunque la estrella se mueva medio píxel
+      gl_FragColor = vec4(vColor * vTw, a * uOpacity);
+    }`,
+});
+stars.add(new THREE.Points(starGeo, starMat));
+
+// nebulosas: manchas de color muy tenues a lo largo de la banda
+const glowTex = (() => {
+  const c = document.createElement('canvas'); c.width = c.height = 256;
+  const g = c.getContext('2d'), gr = g.createRadialGradient(128, 128, 0, 128, 128, 128);
+  gr.addColorStop(0, 'rgba(255,255,255,1)'); gr.addColorStop(0.35, 'rgba(255,255,255,0.35)'); gr.addColorStop(1, 'rgba(255,255,255,0)');
+  g.fillStyle = gr; g.fillRect(0, 0, 256, 256);
+  return new THREE.CanvasTexture(c);
+})();
+const nebulae = [];
+const NEB_COLORS = [0x5b6cff, 0x9b5bff, 0xff5fa2, 0x3fa9ff, 0x7a5cff, 0xff8a5b];
+for (let i = 0; i < 14; i++) {
+  const th = Math.random() * Math.PI * 2;
+  tv.copy(bandU).multiplyScalar(Math.cos(th)).addScaledVector(bandW, Math.sin(th)).addScaledVector(bandN, gauss() * 0.08).normalize().multiplyScalar(110);
+  const m = new THREE.SpriteMaterial({ map: glowTex, color: NEB_COLORS[i % NEB_COLORS.length], transparent: true, depthWrite: false, blending: THREE.AdditiveBlending });
+  const base = 0.05 + Math.random() * 0.07;
+  m.opacity = base;
+  const sp = new THREE.Sprite(m);
+  sp.position.copy(tv);
+  sp.scale.setScalar(30 + Math.random() * 45);
+  stars.add(sp);
+  nebulae.push({ m, base });
+}
+
+// ---------- Estrellas fugaces ----------
+// Planos alargados detrás de la Tierra con un degradado de la cabeza (brillante) a la cola (transparente).
+const meteorMat = new THREE.ShaderMaterial({
+  transparent: true, depthWrite: false, blending: THREE.AdditiveBlending,
+  uniforms: { uAlpha: { value: 0 } },
+  vertexShader: `varying vec2 vUv; void main(){ vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`,
+  fragmentShader: `
+    uniform float uAlpha; varying vec2 vUv;
+    void main() {
+      float tail = pow(vUv.x, 2.5);                       // 0 en la cola, 1 en la cabeza
+      float across = 1.0 - abs(vUv.y - 0.5) * 2.0;        // fino en los bordes
+      float a = tail * pow(across, 1.5) * uAlpha;
+      vec3 col = mix(vec3(0.55, 0.7, 1.0), vec3(1.0), tail);
+      gl_FragColor = vec4(col, a);
+    }`,
+});
+const meteors = [];
+const meteorGeo = new THREE.PlaneGeometry(1, 1);
+for (let i = 0; i < 3; i++) {
+  const mesh = new THREE.Mesh(meteorGeo, meteorMat.clone());
+  mesh.visible = false;
+  scene.add(mesh);
+  meteors.push({ mesh, life: 0, dur: 1, pos: new THREE.Vector2(), dir: new THREE.Vector2(), speed: 0, len: 0 });
+}
+let nextMeteor = 1.5;
+const METEOR_Z = -40;
+function spawnMeteor(t) {
+  const m = meteors.find(x => x.life <= 0);
+  if (!m) return;
+  // zona visible del plano z = METEOR_Z
+  const h = Math.tan(camera.fov * Math.PI / 360) * (camera.position.z - METEOR_Z), w = h * camera.aspect;
+  m.pos.set((Math.random() * 1.6 - 0.8) * w, (Math.random() * 0.9 + 0.1) * h);
+  const ang = -Math.PI / 2 + (Math.random() < 0.5 ? -1 : 1) * (0.35 + Math.random() * 0.6); // hacia abajo y en diagonal
+  m.dir.set(Math.cos(ang), Math.sin(ang));
+  m.speed = 26 + Math.random() * 22;
+  m.len = 7 + Math.random() * 8;
+  m.dur = 0.7 + Math.random() * 0.6;
+  m.life = m.dur;
+  m.mesh.visible = true;
+  m.mesh.rotation.z = Math.atan2(m.dir.y, m.dir.x);
+}
+function updateMeteors(t, dt, visible) {
+  if (visible > 0.05 && t > nextMeteor) { spawnMeteor(t); nextMeteor = t + 2.5 + Math.random() * 5; }
+  for (const m of meteors) {
+    if (m.life <= 0) continue;
+    m.life -= dt;
+    m.pos.addScaledVector(m.dir, m.speed * dt);
+    const p = 1 - m.life / m.dur;                         // progreso 0..1
+    const fade = Math.sin(Math.min(Math.max(p, 0), 1) * Math.PI);
+    const len = m.len * (0.4 + 0.6 * Math.min(p * 2, 1)); // la estela crece al principio
+    m.mesh.scale.set(len, 0.09, 1);
+    m.mesh.position.set(m.pos.x - m.dir.x * len / 2, m.pos.y - m.dir.y * len / 2, METEOR_Z);
+    m.mesh.material.uniforms.uAlpha.value = fade * visible;
+    if (m.life <= 0) m.mesh.visible = false;
+  }
+}
 
 // Parches de alta resolución con teselas satelitales Esri (Mercator -> equirectangular)
 function buildPatch(Z, B, radius, order) {
@@ -365,7 +556,7 @@ const DENS = [
   { max: Infinity, color: '#3b0f70', label: '> 5.000' },
 ];
 document.getElementById('ramp').innerHTML = DENS.map(d => `<div><i style="background:${d.color}"></i>${d.label}</div>`).join('');
-if (window.POBLACION_YEAR) document.getElementById('srcNote').textContent = `Habitantes por km² en cada municipio. Fuente: INE, Padrón ${window.POBLACION_YEAR}.`;
+if (window.POBLACION_YEAR) document.getElementById('srcNote').textContent = `hab/km² · INE ${window.POBLACION_YEAR}`;
 
 let densMat = null;
 async function buildDensityMap() {
@@ -449,8 +640,7 @@ const RENTA_SCALE = [
   { max: Infinity, color: '#1a9850', label: '> 24.000 €' },
 ];
 document.getElementById('ramp3').innerHTML = RENTA_SCALE.map(d => `<div><i style="background:${d.color}"></i>${d.label}</div>`).join('');
-if (window.RENTA_YEAR) document.getElementById('srcNote3').textContent =
-  `Renta neta media anual por persona en cada municipio (€). Fuente: INE, Atlas de Distribución de Renta de los Hogares ${window.RENTA_YEAR}.`;
+if (window.RENTA_YEAR) document.getElementById('srcNote3').textContent = `€ al año · INE ${window.RENTA_YEAR}`;
 
 let rentaMat = null;
 async function buildRentaMap() {
@@ -547,13 +737,30 @@ const stages = [
   { dist: 1.2,  fov: 28, tilt: 0.1,  q: quatFor(40.0, -3.7) },
   { dist: 1.2,  fov: 28, tilt: 0.1,  q: quatFor(40.0, -3.7) }, // misma vista: solo se señala Madrid
 ];
-stages.push(MAP_VIEW); // mapa de idiomas
-stages.push(MAP_VIEW); // densidad de población
-let LAST = stages.length - 1;
+// Lugares: Barcelona (a la derecha, foto a la izquierda) y Granada (a la izquierda, foto a la derecha)
+stages.push({ dist: 1.3, fov: 28, tilt: 0.08, q: quatFor(40.6, -3.2) });  // 4 Barcelona
+stages.push({ dist: 1.3, fov: 28, tilt: 0.08, q: quatFor(38.3, 0.2) });   // 5 Granada
+stages.push(MAP_VIEW); // 6 mapa de idiomas
+stages.push(MAP_VIEW); // 7 densidad de población
+stages.push(MAP_VIEW); // 8 renta por persona
+const LAST = stages.length - 1;
 const legend2 = document.getElementById('legend2');
-stages.push(MAP_VIEW); // renta por persona
 const legend3 = document.getElementById('legend3');
-LAST = stages.length - 1;
+const cities = [
+  { el: document.getElementById('cityBcn'), photo: document.getElementById('photoBcn'), k: 4, side: 'l' },
+  { el: document.getElementById('cityGra'), photo: document.getElementById('photoGra'), k: 5, side: 'r' },
+].map(c => ({ ...c, v: latLonToVec(+c.el.dataset.lat, +c.el.dataset.lon).multiplyScalar(1.002) }));
+const leaderSvg = document.getElementById('leader');
+const leaderLine = document.getElementById('leaderLine');
+const leaderDot = document.getElementById('leaderDot');
+// flecha desde el título hasta lo que se nombra: 0 Tierra, 1 Europa, 2 España
+const arrowSvg = document.getElementById('arrow');
+const arrowPath = document.getElementById('arrowPath');
+const arrowTip = document.getElementById('arrowTip');
+const arrowTargets = [null, latLonToVec(50, 10).multiplyScalar(1.002), latLonToVec(40.2, -3.7).multiplyScalar(1.002)];
+const arrowV = new THREE.Vector3();
+// visibilidad de una etapa k: aparece al llegar y se va al salir
+const stageVis = (s, k) => smoother((s - (k - 0.55)) / 0.35) * (1 - smoother((s - (k + 0.2)) / 0.35));
 const lbls = [...document.querySelectorAll('.lbl')].map(el => ({ el, v: latLonToVec(+el.dataset.lat, +el.dataset.lon).multiplyScalar(1.003) }));
 const legend = document.getElementById('legend');
 
@@ -603,23 +810,35 @@ function frame() {
   camera.fov = fov; camera.updateProjectionMatrix();
 
   // orientación del globo
-  const spin = qa.clone().setFromAxisAngle(yAxis, 0.4 + t * 0.06);
+  // inercia al soltar y arrastre solo en la etapa Espacio
+  if (!dragging && (Math.abs(velX) + Math.abs(velY) > 1e-5)) { rotateBy(velX, velY); velX *= 0.94; velY *= 0.94; }
+  dragEnabled = s < 0.35;
+  cv.classList.toggle('grab', dragEnabled && !dragging);
+  if (!dragEnabled && dragging) { dragging = false; cv.classList.remove('grabbing'); }
+  const spin = qa.clone().setFromAxisAngle(yAxis, 0.4 + t * 0.06).premultiply(userQ);
   const qA = A.q || spin;
   earth.quaternion.copy(qA).slerp(Bn.q, f);
 
   stars.rotation.y = t * 0.002;
-  stars.material.opacity = 0.85 * (1 - 0.5 * smoother(s / LAST));
+  const skyA = 1 - 0.5 * smoother(s / LAST);
+  starMat.uniforms.uTime.value = t;
+  starMat.uniforms.uOpacity.value = skyA;
+  for (const n of nebulae) n.m.opacity = n.base * skyA;
+  // estrellas fugaces solo mientras se ve el espacio (Espacio y Europa)
+  const dtM = Math.min(Math.max(t - (frame.lastT ?? t), 0), 0.05); frame.lastT = t;
+  updateMeteors(t, dtM, 1 - smoother((s - 0.8) / 0.6));
 
   // marcador de Madrid: aparece en la última etapa
   // transición imagen real -> mapa pintado
-  const mapA = smoother((s - 3.15) / 0.6);
+  const mapsOn = 1; // Renta es la última etapa: los mapas pintados se quedan
+  const mapA = smoother((s - 5.15) / 0.6) * mapsOn;
   if (mapMat) mapMat.opacity = mapA;
   if (globeMat) globeMat.opacity = mapA;
-  const densA = smoother((s - 4.15) / 0.6);
-  if (densMat) densMat.opacity = densA;
-  const rentaA = smoother((s - 5.15) / 0.6);
-  if (rentaMat) rentaMat.opacity = rentaA;
-  const pa = smoother(s - 2.15) * (1 - smoother((s - 3.05) / 0.35)); // se oculta al pasar a idiomas
+  const densA = smoother((s - 6.15) / 0.6);
+  if (densMat) densMat.opacity = densA * mapsOn;
+  const rentaA = smoother((s - 7.15) / 0.6);
+  if (rentaMat) rentaMat.opacity = rentaA * mapsOn;
+  const pa = smoother(s - 2.15) * (1 - smoother((s - 3.05) / 0.35)); // se oculta al pasar a Lugares
   const pulse = (t * 0.8) % 1;
   const rs = 0.014 * (0.5 + pulse);
   ring.scale.setScalar(Math.max(rs, 1e-4));
@@ -630,21 +849,83 @@ function frame() {
   pinEl.style.transform = `translate(${(tmp.x * 0.5 + 0.5) * innerWidth + 18}px, ${(-tmp.y * 0.5 + 0.5) * innerHeight - 10}px)`;
 
   // etiquetas de idiomas
-  const la = smoother((s - 3.65) / 0.3) * (1 - smoother((s - 4.05) / 0.3));
+  const la = smoother((s - 5.65) / 0.3) * (1 - smoother((s - 6.05) / 0.3));
   for (const l of lbls) {
     tmp.copy(l.v).applyMatrix4(earth.matrixWorld).project(camera);
     l.el.style.opacity = la;
     l.el.style.transform = `translate(${(tmp.x * 0.5 + 0.5) * innerWidth}px, ${(-tmp.y * 0.5 + 0.5) * innerHeight}px) translate(-50%, -50%)`;
   }
   legend.style.opacity = la;
-  legend2.style.opacity = smoother((s - 4.6) / 0.3) * (1 - smoother((s - 5.05) / 0.3));
-  legend3.style.opacity = smoother((s - 5.6) / 0.3);
+  legend2.style.opacity = smoother((s - 6.6) / 0.3) * (1 - smoother((s - 7.05) / 0.3));
+  legend3.style.opacity = smoother((s - 7.6) / 0.3);
+
+  // ciudades con monumento
+  let leaderA = 0;
+  for (const c of cities) {
+    const a = stageVis(s, c.k);
+    tmp.copy(c.v).applyMatrix4(earth.matrixWorld).project(camera);
+    const x = (tmp.x * 0.5 + 0.5) * innerWidth, y = (-tmp.y * 0.5 + 0.5) * innerHeight;
+    c.el.style.opacity = a;
+    c.el.style.transform = `translate(${x}px, ${y}px)`;
+    c.photo.style.opacity = a;
+    c.photo.style.transform = `translateY(calc(-50% + ${(1 - a) * 24}px))`;
+    if (a > leaderA) {
+      leaderA = a;
+      const r = c.photo.getBoundingClientRect();
+      const px2 = c.side === 'l' ? r.right : r.left, py2 = r.top + r.height * 0.35;
+      leaderLine.setAttribute('x1', x); leaderLine.setAttribute('y1', y);
+      leaderLine.setAttribute('x2', px2); leaderLine.setAttribute('y2', py2);
+      leaderDot.setAttribute('cx', px2); leaderDot.setAttribute('cy', py2);
+    }
+  }
+  leaderSvg.style.opacity = leaderA;
+
+  // flecha del título (etapas 0-2)
+  const ak = Math.round(s);
+  const arrowA = ak <= 2 ? 1 - smoother((Math.abs(s - ak) - 0.12) / 0.16) : 0;
+  arrowSvg.style.opacity = arrowA;
+  if (arrowA > 0.001) {
+    const h = panels[ak].querySelector('h1').getBoundingClientRect();
+    const sx = h.right + 18, sy = h.top + h.height * 0.55;
+    const ctrl = (ex, ey) => [(sx + ex) / 2, Math.min(sy, ey) - Math.max(50, Math.abs(ex - sx) * 0.25)];
+    let ex, ey, cx, cy, gap;
+    if (arrowTargets[ak]) {
+      arrowV.copy(arrowTargets[ak]).applyMatrix4(earth.matrixWorld).project(camera);
+      ex = (arrowV.x * 0.5 + 0.5) * innerWidth; ey = (-arrowV.y * 0.5 + 0.5) * innerHeight;
+      [cx, cy] = ctrl(ex, ey);
+      gap = 12; // deja sitio al círculo del objetivo
+    } else {
+      // Tierra: la punta toca el horizonte (silueta) del globo
+      arrowV.set(0, 0, 0).project(camera);
+      const gx = (arrowV.x * 0.5 + 0.5) * innerWidth, gy = (-arrowV.y * 0.5 + 0.5) * innerHeight;
+      const alpha = Math.asin(Math.min(R / camera.position.length(), 1));
+      const rad = Math.tan(alpha) / Math.tan(camera.fov * Math.PI / 360) * innerHeight / 2;
+      // punto de la silueta en la dirección por la que llega la curva (dos iteraciones bastan)
+      ex = gx - rad; ey = gy;
+      for (let it = 0; it < 3; it++) {
+        [cx, cy] = ctrl(ex, ey);
+        const vx = cx - gx, vy = cy - gy, vl = Math.hypot(vx, vy) || 1;
+        ex = gx + vx / vl * rad; ey = gy + vy / vl * rad;
+      }
+      [cx, cy] = ctrl(ex, ey);
+      gap = 4.5; // la punta de la flecha sobresale ~4,5 px del final del trazo
+    }
+    const dx = ex - cx, dy = ey - cy, dl = Math.hypot(dx, dy) || 1;
+    const tx = ex - dx / dl * gap, ty = ey - dy / dl * gap;
+    arrowTip.style.display = arrowTargets[ak] ? '' : 'none';
+    arrowPath.setAttribute('d', `M${sx},${sy} Q${cx},${cy} ${tx},${ty}`);
+    // efecto de trazo: la flecha se dibuja al aparecer
+    const len = arrowPath.getTotalLength();
+    arrowPath.style.strokeDasharray = len;
+    arrowPath.style.strokeDashoffset = len * (1 - arrowA);
+    arrowTip.setAttribute('cx', ex); arrowTip.setAttribute('cy', ey);
+  }
 
   // UI
   altEl.textContent = Math.round((dist - R) * 6371).toLocaleString('es-ES');
   hint.style.opacity = progress < 0.02 ? 0.7 : 0;
   panels.forEach((p, k) => p.classList.toggle('active', Math.abs(s - k) < 0.3));
-  dots.forEach((d, k) => d.classList.toggle('on', Math.abs(s - k) < 0.5));
+  dots.forEach(d => { const a = +d.dataset.i, b = +(d.dataset.to ?? a); d.classList.toggle('on', s >= a - 0.5 && s < b + 0.5); });
 
   renderer.render(scene, camera);
   requestAnimationFrame(frame);
@@ -653,6 +934,7 @@ frame();
 
 addEventListener('resize', () => {
   renderer.setSize(innerWidth, innerHeight);
+  starMat.uniforms.uPR.value = renderer.getPixelRatio();
   camera.aspect = innerWidth / innerHeight; camera.updateProjectionMatrix();
 });
 </script>
