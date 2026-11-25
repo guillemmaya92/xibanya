@@ -7,7 +7,7 @@
 <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
-<div id="loader" lang="zh-Hans">加载中…</div>
+<div id="loader" lang="zh-Hans" role="status" aria-live="polite"><div class="ld-spin" aria-hidden="true"></div><p class="ld-title">加载中...</p><p class="ld-sub">(还有时间去个厕所哦)</p></div>
 
 <section class="panel side active">
   <h1 lang="zh-Hans">我们美丽的<strong class="big">地球</strong></h1>
@@ -96,6 +96,11 @@
   <img src="img/paisajes/almeria.webp" alt="Desierto de Tabernas, en Almería, bajo un cielo azul" decoding="async">
   <figcaption><h2 lang="zh-Hans"><ruby>阿<rt>ā</rt></ruby><ruby>尔<rt>ěr</rt></ruby><ruby>梅<rt>méi</rt></ruby><ruby>里<rt>lǐ</rt></ruby><ruby>亚<rt>yà</rt></ruby></h2></figcaption>
 </figure>
+<div class="city" id="cityCad" data-lat="36.53" data-lon="-6.29"><b></b><span>Cádiz</span></div>
+<figure class="photo l" id="photoCad">
+  <img src="img/paisajes/cadiz.png" alt="Vista de la ciudad de Cádiz junto al mar" decoding="async">
+  <figcaption><h2 lang="zh-Hans"><ruby>加<rt>jiā</rt></ruby><ruby>的<rt>dì</rt></ruby><ruby>斯<rt>sī</rt></ruby></h2></figcaption>
+</figure>
 <div class="city" id="citySev" data-lat="37.384" data-lon="-5.991"><b></b><span>Sevilla</span></div>
 <figure class="photo l" id="photoSev">
   <img src="img/paisajes/sevilla.jpg" alt="Patio de las Doncellas del Real Alcázar de Sevilla" decoding="async">
@@ -142,7 +147,7 @@
 <div class="pin" id="pin" lang="zh-Hans">马德里</div>
 <div class="hint" id="hint" lang="zh-Hans"><span>向下滑动</span><i></i></div>
 <div class="dots" id="dots" role="navigation" aria-label="Etapas">
-  <button data-i="0" lang="zh-Hans">地球</button><button data-i="1" lang="zh-Hans">欧洲</button><button data-i="2" lang="zh-Hans">西班牙</button><button data-i="3" lang="zh-Hans">马德里</button><button data-i="4" data-to="7" lang="zh-Hans">赫罗纳</button><button data-i="8" data-to="9" lang="zh-Hans">名胜</button><button data-i="10" data-to="17" lang="zh-Hans">风景</button><button data-i="18" data-to="20" lang="zh-Hans">美食</button><button data-i="21" lang="zh-Hans">语言</button><button data-i="22" lang="zh-Hans">人口密度</button><button data-i="23" lang="zh-Hans">人均收入</button><button data-i="24" lang="zh-Hans">谢谢</button>
+  <button data-i="0" lang="zh-Hans">地球</button><button data-i="1" lang="zh-Hans">欧洲</button><button data-i="2" lang="zh-Hans">西班牙</button><button data-i="3" lang="zh-Hans">马德里</button><button data-i="4" data-to="7" lang="zh-Hans">赫罗纳</button><button data-i="8" data-to="9" lang="zh-Hans">名胜</button><button data-i="10" data-to="18" lang="zh-Hans">风景</button><button data-i="19" data-to="21" lang="zh-Hans">美食</button><button data-i="22" lang="zh-Hans">语言</button><button data-i="23" lang="zh-Hans">人口密度</button><button data-i="24" lang="zh-Hans">人均收入</button><button data-i="25" lang="zh-Hans">谢谢</button>
 </div>
 <div class="alt" lang="zh-Hans">高度 <span id="alt">—</span> 公里</div>
 
@@ -740,14 +745,15 @@ stages.push({ dist: 1.3, fov: 28, tilt: 0.08, q: quatFor(42.40, -1.80) }); // 13
 stages.push({ dist: 1.3, fov: 28, tilt: 0.08, q: quatFor(41.78, 3.29) }); // 14 Paisaje: Lleida
 stages.push({ dist: 1.3, fov: 28, tilt: 0.08, q: quatFor(39.64, 1.34) }); // 15 Paisaje: Menorca
 stages.push({ dist: 1.3, fov: 28, tilt: 0.08, q: quatFor(36.75, 0.21) }); // 16 Paisaje: Almería
-stages.push({ dist: 1.3, fov: 28, tilt: 0.08, q: quatFor(37.08, -8.59) }); // 17 Paisaje: Sevilla
-stages.push({ dist: 1.3, fov: 28, tilt: 0.08, q: quatFor(38.90, -3.55) }); // 18 Gastronomía: Extremadura
-stages.push({ dist: 1.3, fov: 28, tilt: 0.08, q: quatFor(42.17, -5.05) }); // 19 Gastronomía: La Rioja
-stages.push({ dist: 1.3, fov: 28, tilt: 0.08, q: quatFor(39.17, 2.22) }); // 20 Gastronomía: Valencia
-stages.push(MAP_VIEW); // 21 mapa de idiomas
-stages.push(MAP_VIEW); // 22 densidad de población
-stages.push(MAP_VIEW); // 23 renta por persona
-stages.push({ dist: 45, fov: 55, tilt: 0, q: quatFor(40.0, -3.7) }); // 24 final: la Tierra se pierde en la galaxia
+stages.push({ dist: 1.3, fov: 28, tilt: 0.08, q: quatFor(36.23, -8.89) }); // 17 Paisaje: Cádiz
+stages.push({ dist: 1.3, fov: 28, tilt: 0.08, q: quatFor(37.08, -8.59) }); // 18 Paisaje: Sevilla
+stages.push({ dist: 1.3, fov: 28, tilt: 0.08, q: quatFor(38.90, -3.55) }); // 19 Gastronomía: Extremadura
+stages.push({ dist: 1.3, fov: 28, tilt: 0.08, q: quatFor(42.17, -5.05) }); // 20 Gastronomía: La Rioja
+stages.push({ dist: 1.3, fov: 28, tilt: 0.08, q: quatFor(39.17, 2.22) }); // 21 Gastronomía: Valencia
+stages.push(MAP_VIEW); // 22 mapa de idiomas
+stages.push(MAP_VIEW); // 23 densidad de población
+stages.push(MAP_VIEW); // 24 renta por persona
+stages.push({ dist: 45, fov: 55, tilt: 0, q: quatFor(40.0, -3.7) }); // 25 final: la Tierra se pierde en la galaxia
 const LAST = stages.length - 1;
 const legend2 = document.getElementById('legend2');
 const statPop = document.getElementById('statPop'), statInc = document.getElementById('statInc');
@@ -770,10 +776,11 @@ const cities = [
   { el: document.getElementById('cityLle'), photo: document.getElementById('photoLle'), k: 14, side: 'r' },
   { el: document.getElementById('cityMen'), photo: document.getElementById('photoMen'), k: 15, side: 'l' },
   { el: document.getElementById('cityAlm'), photo: document.getElementById('photoAlm'), k: 16, side: 'r' },
-  { el: document.getElementById('citySev'), photo: document.getElementById('photoSev'), k: 17, side: 'l' },
-  { el: document.getElementById('cityJam'), photo: document.getElementById('photoJam'), k: 18, side: 'r' },
-  { el: document.getElementById('cityVin'), photo: document.getElementById('photoVin'), k: 19, side: 'l' },
-  { el: document.getElementById('cityPae'), photo: document.getElementById('photoPae'), k: 20, side: 'r' },
+  { el: document.getElementById('cityCad'), photo: document.getElementById('photoCad'), k: 17, side: 'l' },
+  { el: document.getElementById('citySev'), photo: document.getElementById('photoSev'), k: 18, side: 'l' },
+  { el: document.getElementById('cityJam'), photo: document.getElementById('photoJam'), k: 19, side: 'r' },
+  { el: document.getElementById('cityVin'), photo: document.getElementById('photoVin'), k: 20, side: 'l' },
+  { el: document.getElementById('cityPae'), photo: document.getElementById('photoPae'), k: 21, side: 'r' },
 ].map(c => ({ ...c, v: latLonToVec(+c.el.dataset.lat, +c.el.dataset.lon).multiplyScalar(1.002) }));
 const leaderSvg = document.getElementById('leader');
 const leaderLine = document.getElementById('leaderLine');
@@ -881,20 +888,20 @@ function frame() {
   const spin = qa.clone().setFromAxisAngle(yAxis, 0.4 + t * 0.06).premultiply(userQ);
   const qA = A.q || spin;
   earth.quaternion.copy(qA).slerp(Bn.q, f);
-  const endA = smoother((s - 23.15) / 0.75);            // progreso del alejamiento final
-  const earthScale = 1 - 0.9995 * smoother((s - 23.4) / 0.55);
+  const endA = smoother((s - 24.15) / 0.75);            // progreso del alejamiento final
+  const earthScale = 1 - 0.9995 * smoother((s - 24.4) / 0.55);
   earth.scale.setScalar(earthScale); atmos.scale.setScalar(earthScale);
   earth.visible = atmos.visible = earthScale > 0.002;
 
   // el cielo solo gira muy despacio alrededor del eje de la galaxia (la banda no se desplaza)
   stars.quaternion.copy(qSky.setFromAxisAngle(galaxyN, t * 0.002)).multiply(qGalaxy);
-  const skyA = 1 - 0.5 * smoother(Math.min(s, 23) / 23) + 0.5 * endA;
+  const skyA = 1 - 0.5 * smoother(Math.min(s, 24) / 24) + 0.5 * endA;
   starMat.uniforms.uTime.value = t;
   starMat.uniforms.uOpacity.value = skyA;
   for (const n of nebulae) n.m.opacity = n.base * skyA * (1 + 1.5 * endA);
   // estrellas fugaces solo mientras se ve el espacio (Espacio y Europa)
   const dtM = Math.min(Math.max(t - (frame.lastT ?? t), 0), 0.05); frame.lastT = t;
-  updateMeteors(t, dtM, Math.max(1 - smoother((s - 0.8) / 0.6), smoother((s - 23.8) / 0.15)));
+  updateMeteors(t, dtM, Math.max(1 - smoother((s - 0.8) / 0.6), smoother((s - 24.8) / 0.15)));
 
   // marcador de Madrid: aparece en la última etapa
   // transición imagen real -> mapa pintado
@@ -903,11 +910,11 @@ function frame() {
   //  - entrada: primero el globo pintado (opaco) y después, encima, el mapa de idiomas
   //  - cada mapa nuevo se funde sobre el anterior opaco; el de debajo se oculta cuando el de arriba ya es opaco
   //  - salida: primero se va el mapa temático (sobre el globo pintado opaco) y después el globo pintado
-  const globeA = smoother((s - 20.1) / 0.35) * (1 - smoother((s - 23.25) / 0.35));
-  const themOn = 1 - smoother((s - 23.1) / 0.3);
-  const langA = smoother((s - 20.4) / 0.35);
-  const densA = smoother((s - 21.15) / 0.6);
-  const rentaA = smoother((s - 22.15) / 0.6);
+  const globeA = smoother((s - 21.1) / 0.35) * (1 - smoother((s - 24.25) / 0.35));
+  const themOn = 1 - smoother((s - 24.1) / 0.3);
+  const langA = smoother((s - 21.4) / 0.35);
+  const densA = smoother((s - 22.15) / 0.6);
+  const rentaA = smoother((s - 23.15) / 0.6);
   if (globeMat) globeMat.opacity = globeA;
   if (mapMat) mapMat.opacity = densA > 0.999 ? 0 : langA * themOn;
   if (densMat) densMat.opacity = rentaA > 0.999 ? 0 : densA * themOn;
@@ -927,19 +934,19 @@ function frame() {
   pinEl.style.transform = `translate(${(tmp.x * 0.5 + 0.5) * innerWidth + 18}px, ${(-tmp.y * 0.5 + 0.5) * innerHeight - 10}px)`;
 
   // etiquetas de idiomas
-  const la = smoother((s - 20.65) / 0.3) * (1 - smoother((s - 21.05) / 0.3));
+  const la = smoother((s - 21.65) / 0.3) * (1 - smoother((s - 22.05) / 0.3));
   for (const l of lbls) {
     tmp.copy(l.v).applyMatrix4(earth.matrixWorld).project(camera);
     l.el.style.opacity = la;
     l.el.style.transform = `translate(${(tmp.x * 0.5 + 0.5) * innerWidth}px, ${(-tmp.y * 0.5 + 0.5) * innerHeight}px) translate(-50%, -50%)`;
   }
   legend.style.opacity = la;
-  legend2.style.opacity = smoother((s - 21.6) / 0.3) * (1 - smoother((s - 22.05) / 0.3));
-  legend3.style.opacity = smoother((s - 22.6) / 0.3) * (1 - smoother((s - 23.05) / 0.25));
-  const popA = smoother((s - 21.6) / 0.3) * (1 - smoother((s - 22.05) / 0.3));
-  const incA = smoother((s - 22.6) / 0.3) * (1 - smoother((s - 23.05) / 0.25));
+  legend2.style.opacity = smoother((s - 22.6) / 0.3) * (1 - smoother((s - 23.05) / 0.3));
+  legend3.style.opacity = smoother((s - 23.6) / 0.3) * (1 - smoother((s - 24.05) / 0.25));
+  const popA = smoother((s - 22.6) / 0.3) * (1 - smoother((s - 23.05) / 0.3));
+  const incA = smoother((s - 23.6) / 0.3) * (1 - smoother((s - 24.05) / 0.25));
   // 谢谢大家: aparece cuando la Tierra ya se ha perdido entre las estrellas
-  const thA = smoother((s - 23.6) / 0.35);
+  const thA = smoother((s - 24.6) / 0.35);
   thanksEl.style.opacity = thA;
   thanksH.style.transform = `scale(${0.92 + 0.08 * thA})`;
   statPop.style.opacity = popA; statPop.style.transform = `translateY(${(1 - popA) * -10}px)`;
@@ -1026,7 +1033,7 @@ function frame() {
 
   // cámara del cielo: sigue la orientación de la cámara principal, pero en el alejamiento final
   // se queda quieta para que las estrellas no se muevan mientras la Tierra se pierde a lo lejos
-  if (s <= 23) skyQ.copy(camera.quaternion);
+  if (s <= 24) skyQ.copy(camera.quaternion);
   skyCam.quaternion.copy(skyQ);
   renderer.clear();
   renderer.render(skyScene, skyCam);

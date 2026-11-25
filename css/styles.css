@@ -110,7 +110,16 @@ canvas.grabbing { cursor: grabbing; }
 .thanks { position: fixed; inset: 0; z-index: 7; display: grid; place-items: center; opacity: 0; pointer-events: none; }
 .thanks h1 { font-size: clamp(3rem, 10vw, 9rem); font-weight: 700; letter-spacing: .25em; padding-left: .25em; color: #fff;
   text-shadow: 0 0 40px #7cc4ff99, 0 0 90px #7c5cff55, 0 4px 30px #000; will-change: transform; }
-#loader { position: fixed; inset: 0; background: #02030a; z-index: 20; display: grid; place-items: center; letter-spacing: .4em; font-size: .8rem; transition: opacity 1s; }
+#loader { position: fixed; inset: 0; z-index: 20; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1rem; padding: 0 1.5rem; text-align: center;
+  background: radial-gradient(ellipse at 50% 40%, #0d1633 0%, #02030a 70%); transition: opacity 1s; }
+#loader .ld-spin { width: 56px; height: 56px; margin-bottom: .6rem; border-radius: 50%; border: 2px solid #7cc4ff22; border-top-color: var(--accent);
+  box-shadow: 0 0 30px #7cc4ff33; animation: ld-rot 1s linear infinite; }
+#loader .ld-title { font-size: clamp(1.4rem, 4vw, 2rem); font-weight: 600; letter-spacing: .3em; padding-left: .3em; color: #fff;
+  text-shadow: 0 0 24px #7cc4ff88; animation: ld-pulse 1.8s ease-in-out infinite; }
+#loader .ld-sub { font-size: clamp(.85rem, 2.2vw, 1rem); letter-spacing: .15em; color: #eaf2ffa0; }
+@keyframes ld-rot { to { transform: rotate(360deg); } }
+@keyframes ld-pulse { 50% { opacity: .55; } }
+@media (prefers-reduced-motion: reduce) { #loader .ld-spin, #loader .ld-title { animation: none; } }
 
 /* móvil: sin índice de etapas; las fotos de la derecha ocupan el hueco que dejaba */
 @media (max-width: 768px) {
