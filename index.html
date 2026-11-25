@@ -3,11 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>España</title>
+<title>西班牙</title>
 <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
-<div id="loader" lang="zh-Hans" role="status" aria-live="polite"><div class="ld-spin" aria-hidden="true"></div><p class="ld-title">加载中...</p><p class="ld-sub">(还有时间去个厕所哦)</p></div>
+<div id="loader" lang="zh-Hans" role="status" aria-live="polite"><div class="ld-spin" aria-hidden="true"></div><p class="ld-title">加载中...</p><p class="ld-sub">(还有时间去个厕所)</p></div>
 
 <section class="panel side active">
   <h1 lang="zh-Hans">我们美丽的<strong class="big">地球</strong></h1>
@@ -121,12 +121,17 @@
   <img src="img/gastronomia/paella_valencia.jpg" alt="Paella de marisco con gambas, mejillones y almejas en una paellera" decoding="async">
   <figcaption><h2 lang="zh-Hans"><ruby>西<rt>xī</rt></ruby><ruby>班<rt>bān</rt></ruby><ruby>牙<rt>yá</rt></ruby><ruby>海<rt>hǎi</rt></ruby><ruby>鲜<rt>xiān</rt></ruby><ruby>饭<rt>fàn</rt></ruby></h2></figcaption>
 </figure>
+<div class="city" id="cityGui" data-lat="37.1761" data-lon="-3.5881"><b></b><span>Granada</span></div>
+<figure class="photo l video" id="photoGui" data-video="img/cultura/yerai_cortes.mp4">
+  <img src="img/cultura/granada_guitarra_clasica.jpg" alt="Guitarra clásica; pulsa para ver a Yerai Cortés tocar" decoding="async">
+  <figcaption><h2 lang="zh-Hans"><ruby>古<rt>gǔ</rt></ruby><ruby>典<rt>diǎn</rt></ruby><ruby>吉<rt>jí</rt></ruby><ruby>他<rt>tā</rt></ruby></h2></figcaption>
+</figure>
 <div class="stat" id="statPop" lang="zh-Hans"><span>西班牙总人口</span><b id="statPopVal">—</b></div>
 <div class="stat" id="statInc" lang="zh-Hans"><span>人均年收入</span><b>15,948 欧元</b></div>
 <div class="thanks" id="thanks" lang="zh-Hans"><h1>谢谢大家</h1></div>
 <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Imagen ampliada" hidden>
   <button class="lb-close" id="lbClose" aria-label="Cerrar">×</button>
-  <figure><img id="lbImg" alt=""><figcaption id="lbCap"></figcaption></figure>
+  <figure><img id="lbImg" alt=""><video id="lbVid" controls playsinline preload="none" hidden></video><figcaption id="lbCap"></figcaption></figure>
 </div>
 <div class="city" id="gironaMark" lang="zh-Hans" data-lat="41.983" data-lon="2.824"><b></b><span>赫罗纳</span></div>
 <div class="city" id="cityGir" data-lat="41.983" data-lon="2.824"><b></b><span>Girona</span></div>
@@ -147,7 +152,11 @@
 <div class="pin" id="pin" lang="zh-Hans">马德里</div>
 <div class="hint" id="hint" lang="zh-Hans"><span>向下滑动</span><i></i></div>
 <div class="dots" id="dots" role="navigation" aria-label="Etapas">
-  <button data-i="0" lang="zh-Hans">地球</button><button data-i="1" lang="zh-Hans">欧洲</button><button data-i="2" lang="zh-Hans">西班牙</button><button data-i="3" lang="zh-Hans">马德里</button><button data-i="4" data-to="7" lang="zh-Hans">赫罗纳</button><button data-i="8" data-to="9" lang="zh-Hans">名胜</button><button data-i="10" data-to="18" lang="zh-Hans">风景</button><button data-i="19" data-to="21" lang="zh-Hans">美食</button><button data-i="22" lang="zh-Hans">语言</button><button data-i="23" lang="zh-Hans">人口密度</button><button data-i="24" lang="zh-Hans">人均收入</button><button data-i="25" lang="zh-Hans">谢谢</button>
+  <button data-i="0" lang="zh-Hans">地球</button><button data-i="1" lang="zh-Hans">欧洲</button><button data-i="2" lang="zh-Hans">西班牙</button><button data-i="3" lang="zh-Hans">马德里</button><button data-i="4" data-to="7" lang="zh-Hans">赫罗纳</button><button data-i="8" data-to="9" lang="zh-Hans">名胜</button><button data-i="10" data-to="18" lang="zh-Hans">风景</button><button data-i="19" data-to="21" lang="zh-Hans">美食</button><button data-i="22" lang="zh-Hans">文化</button><button data-i="23" lang="zh-Hans">语言</button><button data-i="24" lang="zh-Hans">人口密度</button><button data-i="25" lang="zh-Hans">人均收入</button><button data-i="26" lang="zh-Hans">谢谢</button>
+</div>
+<div class="navarrows" id="navArrows">
+  <button id="navPrev" aria-label="Anterior" disabled><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button>
+  <button id="navNext" aria-label="Siguiente"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button>
 </div>
 <div class="alt" lang="zh-Hans">高度 <span id="alt">—</span> 公里</div>
 
@@ -750,10 +759,11 @@ stages.push({ dist: 1.3, fov: 28, tilt: 0.08, q: quatFor(37.08, -8.59) }); // 18
 stages.push({ dist: 1.3, fov: 28, tilt: 0.08, q: quatFor(38.90, -3.55) }); // 19 Gastronomía: Extremadura
 stages.push({ dist: 1.3, fov: 28, tilt: 0.08, q: quatFor(42.17, -5.05) }); // 20 Gastronomía: La Rioja
 stages.push({ dist: 1.3, fov: 28, tilt: 0.08, q: quatFor(39.17, 2.22) }); // 21 Gastronomía: Valencia
-stages.push(MAP_VIEW); // 22 mapa de idiomas
-stages.push(MAP_VIEW); // 23 densidad de población
-stages.push(MAP_VIEW); // 24 renta por persona
-stages.push({ dist: 45, fov: 55, tilt: 0, q: quatFor(40.0, -3.7) }); // 25 final: la Tierra se pierde en la galaxia
+stages.push({ dist: 1.3, fov: 28, tilt: 0.08, q: quatFor(36.88, -6.19) }); // 22 Cultura: guitarra clásica
+stages.push(MAP_VIEW); // 23 mapa de idiomas
+stages.push(MAP_VIEW); // 24 densidad de población
+stages.push(MAP_VIEW); // 25 renta por persona
+stages.push({ dist: 45, fov: 55, tilt: 0, q: quatFor(40.0, -3.7) }); // 26 final: la Tierra se pierde en la galaxia
 const LAST = stages.length - 1;
 const legend2 = document.getElementById('legend2');
 const statPop = document.getElementById('statPop'), statInc = document.getElementById('statInc');
@@ -781,6 +791,7 @@ const cities = [
   { el: document.getElementById('cityJam'), photo: document.getElementById('photoJam'), k: 19, side: 'r' },
   { el: document.getElementById('cityVin'), photo: document.getElementById('photoVin'), k: 20, side: 'l' },
   { el: document.getElementById('cityPae'), photo: document.getElementById('photoPae'), k: 21, side: 'r' },
+  { el: document.getElementById('cityGui'), photo: document.getElementById('photoGui'), k: 22, side: 'l' },
 ].map(c => ({ ...c, v: latLonToVec(+c.el.dataset.lat, +c.el.dataset.lon).multiplyScalar(1.002) }));
 const leaderSvg = document.getElementById('leader');
 const leaderLine = document.getElementById('leaderLine');
@@ -809,11 +820,14 @@ addEventListener('scroll', readScroll, { passive: true });
 readScroll();
 
 // ---------- Visor de imágenes: al pulsar una foto se amplía ----------
-const lightbox = document.getElementById('lightbox'), lbImg = document.getElementById('lbImg'), lbCap = document.getElementById('lbCap');
+const lightbox = document.getElementById('lightbox'), lbImg = document.getElementById('lbImg'), lbVid = document.getElementById('lbVid'), lbCap = document.getElementById('lbCap');
 let lbLastFocus = null;
 const openLightbox = fig => {
   const img = fig.querySelector('img'), cap = fig.querySelector('figcaption');
-  lbImg.src = img.currentSrc || img.src; lbImg.alt = img.alt;
+  const vid = fig.dataset.video;
+  lbImg.hidden = !!vid; lbVid.hidden = !vid;
+  if (vid) { lbVid.removeAttribute('poster'); lbVid.preload = 'auto'; lbVid.src = vid + '#t=0.001'; lbVid.pause(); } // #t fuerza a mostrar el primer fotograma
+  else { lbImg.src = img.currentSrc || img.src; lbImg.alt = img.alt; }
   lbCap.innerHTML = cap ? cap.innerHTML : '';
   lbLastFocus = document.activeElement;
   lightbox.hidden = false;
@@ -823,6 +837,7 @@ const openLightbox = fig => {
 };
 const closeLightbox = () => {
   lightbox.classList.remove('open');
+  lbVid.pause();
   document.documentElement.classList.remove('lb-lock');
   setTimeout(() => { if (!lightbox.classList.contains('open')) lightbox.hidden = true; }, 300);
   if (lbLastFocus) lbLastFocus.focus();
@@ -830,13 +845,45 @@ const closeLightbox = () => {
 document.querySelectorAll('figure.photo').forEach(fig => {
   fig.tabIndex = -1;
   fig.setAttribute('role', 'button');
-  fig.setAttribute('aria-label', 'Ampliar imagen');
+  fig.setAttribute('aria-label', fig.dataset.video ? 'Reproducir vídeo' : 'Ampliar imagen');
   fig.addEventListener('click', () => openLightbox(fig));
   fig.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openLightbox(fig); } });
 });
 lightbox.addEventListener('click', closeLightbox);
-const goTo = i => scrollTo({ top: Math.min(Math.max(i, 0), LAST) / LAST * maxScroll(), behavior: 'smooth' });
+lbVid.addEventListener('click', e => e.stopPropagation()); // los controles del vídeo no cierran el visor
+// Desplazamiento propio: curva suave y duración larga (el scroll 'smooth' nativo es corto y brusco)
+let scrollAnim = 0, destIdx = null;
+const easeInOut = t => t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+const stopAnim = () => { cancelAnimationFrame(scrollAnim); destIdx = null; };
+['wheel', 'touchstart', 'pointerdown'].forEach(ev => addEventListener(ev, stopAnim, { passive: true }));
+const goTo = i => {
+  i = Math.min(Math.max(i, 0), LAST);
+  cancelAnimationFrame(scrollAnim);
+  destIdx = i;
+  const from = scrollY, to = i / LAST * maxScroll();
+  // los tramos 00→01 y 01→02 pesan 2,5 veces más (más lentos)
+  const fs = from / maxScroll() * LAST, lo = Math.min(fs, i), hi = Math.max(fs, i);
+  // tramos lentos [desde, hasta, factor], en etapas; 11→12 del índice = etapas 25→26
+  const SLOW = [[0, 2, 2.5], [25, 26, 4]];
+  let units = hi - lo;
+  SLOW.forEach(([a, b, k]) => { units += Math.max(0, Math.min(hi, b) - Math.max(lo, a)) * (k - 1); });
+  const span = hi - lo || 1;
+  const dur = Math.min(900 + span * 700, 4500) * (units / span);
+  const t0 = performance.now();
+  const step = now => {
+    const k = Math.min((now - t0) / dur, 1);
+    scrollTo(0, from + (to - from) * easeInOut(k));
+    if (k < 1) scrollAnim = requestAnimationFrame(step); else destIdx = null;
+  };
+  scrollAnim = requestAnimationFrame(step);
+};
 dots.forEach(b => b.addEventListener('click', () => goTo(+b.dataset.i)));
+// Flechas inferiores: avanzan o retroceden una etapa (cada ciudad 04-07 es una etapa propia)
+const navPrev = document.getElementById('navPrev'), navNext = document.getElementById('navNext');
+let navIdx = 0;
+const navStep = d => { goTo((destIdx ?? navIdx) + d); };
+navPrev.addEventListener('click', () => navStep(-1));
+navNext.addEventListener('click', () => navStep(1));
 addEventListener('keydown', e => {
   if (!lightbox.hidden) { if (e.key === 'Escape') closeLightbox(); e.preventDefault(); return; }
   const cur = Math.round(target * LAST);
@@ -888,20 +935,20 @@ function frame() {
   const spin = qa.clone().setFromAxisAngle(yAxis, 0.4 + t * 0.06).premultiply(userQ);
   const qA = A.q || spin;
   earth.quaternion.copy(qA).slerp(Bn.q, f);
-  const endA = smoother((s - 24.15) / 0.75);            // progreso del alejamiento final
-  const earthScale = 1 - 0.9995 * smoother((s - 24.4) / 0.55);
+  const endA = smoother((s - 25.15) / 0.75);            // progreso del alejamiento final
+  const earthScale = 1 - 0.9995 * smoother((s - 25.4) / 0.55);
   earth.scale.setScalar(earthScale); atmos.scale.setScalar(earthScale);
   earth.visible = atmos.visible = earthScale > 0.002;
 
   // el cielo solo gira muy despacio alrededor del eje de la galaxia (la banda no se desplaza)
   stars.quaternion.copy(qSky.setFromAxisAngle(galaxyN, t * 0.002)).multiply(qGalaxy);
-  const skyA = 1 - 0.5 * smoother(Math.min(s, 24) / 24) + 0.5 * endA;
+  const skyA = 1 - 0.5 * smoother(Math.min(s, 25) / 25) + 0.5 * endA;
   starMat.uniforms.uTime.value = t;
   starMat.uniforms.uOpacity.value = skyA;
   for (const n of nebulae) n.m.opacity = n.base * skyA * (1 + 1.5 * endA);
   // estrellas fugaces solo mientras se ve el espacio (Espacio y Europa)
   const dtM = Math.min(Math.max(t - (frame.lastT ?? t), 0), 0.05); frame.lastT = t;
-  updateMeteors(t, dtM, Math.max(1 - smoother((s - 0.8) / 0.6), smoother((s - 24.8) / 0.15)));
+  updateMeteors(t, dtM, Math.max(1 - smoother((s - 0.8) / 0.6), smoother((s - 25.8) / 0.15)));
 
   // marcador de Madrid: aparece en la última etapa
   // transición imagen real -> mapa pintado
@@ -910,11 +957,11 @@ function frame() {
   //  - entrada: primero el globo pintado (opaco) y después, encima, el mapa de idiomas
   //  - cada mapa nuevo se funde sobre el anterior opaco; el de debajo se oculta cuando el de arriba ya es opaco
   //  - salida: primero se va el mapa temático (sobre el globo pintado opaco) y después el globo pintado
-  const globeA = smoother((s - 21.1) / 0.35) * (1 - smoother((s - 24.25) / 0.35));
-  const themOn = 1 - smoother((s - 24.1) / 0.3);
-  const langA = smoother((s - 21.4) / 0.35);
-  const densA = smoother((s - 22.15) / 0.6);
-  const rentaA = smoother((s - 23.15) / 0.6);
+  const globeA = smoother((s - 22.1) / 0.35) * (1 - smoother((s - 25.25) / 0.35));
+  const themOn = 1 - smoother((s - 25.1) / 0.3);
+  const langA = smoother((s - 22.4) / 0.35);
+  const densA = smoother((s - 23.15) / 0.6);
+  const rentaA = smoother((s - 24.15) / 0.6);
   if (globeMat) globeMat.opacity = globeA;
   if (mapMat) mapMat.opacity = densA > 0.999 ? 0 : langA * themOn;
   if (densMat) densMat.opacity = rentaA > 0.999 ? 0 : densA * themOn;
@@ -934,19 +981,19 @@ function frame() {
   pinEl.style.transform = `translate(${(tmp.x * 0.5 + 0.5) * innerWidth + 18}px, ${(-tmp.y * 0.5 + 0.5) * innerHeight - 10}px)`;
 
   // etiquetas de idiomas
-  const la = smoother((s - 21.65) / 0.3) * (1 - smoother((s - 22.05) / 0.3));
+  const la = smoother((s - 22.65) / 0.3) * (1 - smoother((s - 23.05) / 0.3));
   for (const l of lbls) {
     tmp.copy(l.v).applyMatrix4(earth.matrixWorld).project(camera);
     l.el.style.opacity = la;
     l.el.style.transform = `translate(${(tmp.x * 0.5 + 0.5) * innerWidth}px, ${(-tmp.y * 0.5 + 0.5) * innerHeight}px) translate(-50%, -50%)`;
   }
   legend.style.opacity = la;
-  legend2.style.opacity = smoother((s - 22.6) / 0.3) * (1 - smoother((s - 23.05) / 0.3));
-  legend3.style.opacity = smoother((s - 23.6) / 0.3) * (1 - smoother((s - 24.05) / 0.25));
-  const popA = smoother((s - 22.6) / 0.3) * (1 - smoother((s - 23.05) / 0.3));
-  const incA = smoother((s - 23.6) / 0.3) * (1 - smoother((s - 24.05) / 0.25));
+  legend2.style.opacity = smoother((s - 23.6) / 0.3) * (1 - smoother((s - 24.05) / 0.3));
+  legend3.style.opacity = smoother((s - 24.6) / 0.3) * (1 - smoother((s - 25.05) / 0.25));
+  const popA = smoother((s - 23.6) / 0.3) * (1 - smoother((s - 24.05) / 0.3));
+  const incA = smoother((s - 24.6) / 0.3) * (1 - smoother((s - 25.05) / 0.25));
   // 谢谢大家: aparece cuando la Tierra ya se ha perdido entre las estrellas
-  const thA = smoother((s - 24.6) / 0.35);
+  const thA = smoother((s - 25.6) / 0.35);
   thanksEl.style.opacity = thA;
   thanksH.style.transform = `scale(${0.92 + 0.08 * thA})`;
   statPop.style.opacity = popA; statPop.style.transform = `translateY(${(1 - popA) * -10}px)`;
@@ -1028,12 +1075,14 @@ function frame() {
   // UI
   altEl.textContent = Math.round((dist - R) * 6371).toLocaleString('zh-CN');
   hint.style.opacity = progress < 0.02 ? 0.7 : 0;
+  navIdx = Math.round(s);
+  navPrev.disabled = navIdx <= 0; navNext.disabled = navIdx >= LAST;
   panels.forEach((p, k) => p.classList.toggle('active', Math.abs(s - k) < 0.3));
   dots.forEach(d => { const a = +d.dataset.i, b = +(d.dataset.to ?? a); d.classList.toggle('on', s >= a - 0.5 && s < b + 0.5); });
 
   // cámara del cielo: sigue la orientación de la cámara principal, pero en el alejamiento final
   // se queda quieta para que las estrellas no se muevan mientras la Tierra se pierde a lo lejos
-  if (s <= 24) skyQ.copy(camera.quaternion);
+  if (s <= 25) skyQ.copy(camera.quaternion);
   skyCam.quaternion.copy(skyQ);
   renderer.clear();
   renderer.render(skyScene, skyCam);
